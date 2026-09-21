@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#050811"/>
+  <rect x="4" y="4" width="504" height="504" rx="92" fill="none" stroke="#222b45" stroke-width="4"/>
+  <text x="256" y="288" fill="#ffffff" font-family="-apple-system,BlinkMacSystemFont,monospace,sans-serif" font-weight="900" font-size="76" letter-spacing="10" text-anchor="middle">SYSTEM</text>
+</svg>
