@@ -1,217 +1,63 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="theme-color" content="#050811">
-		<title>SYSTEM | A sharper way to plan</title>
-	<style>
-		:root {
-				color-scheme: dark;
-				--bg: #050811;
-				--surface: rgba(10, 25, 47, .9);
-				--surface-strong: #0a192f;
-				--ink: #ffffff;
-				--muted: #9eabc0;
-				--line: #14345d;
-				--accent: #d7263d;
-				--accent-strong: #e63946;
-				--accent-soft: #401525;
-				--danger: #e63946;
-				--shadow: 0 24px 70px rgba(0, 0, 0, .4);
-		}
-
-		[data-theme="dark"] {
-			color-scheme: dark;
-				--bg: #050811;
-				--surface: rgba(0, 31, 84, .88);
-				--surface-strong: #001f54;
-				--ink: #ffffff;
-				--muted: #a8b7cf;
-				--line: #123c78;
-				--accent: #e63946;
-				--accent-strong: #d7263d;
-				--accent-soft: #481526;
-				--danger: #e63946;
-				--shadow: 0 24px 70px rgba(0, 0, 0, .46);
-		}
-
-		* { box-sizing: border-box; }
-		body {
-			margin: 0;
-			min-height: 100vh;
-			color: var(--ink);
-			background: var(--bg);
-			font-family: "Avenir Next", Avenir, "Segoe UI", sans-serif;
-			transition: background .3s ease, color .3s ease;
-		}
-		body::before {
-			content: "";
-			position: fixed;
-			inset: 0;
-			z-index: -1;
-			pointer-events: none;
-			background: radial-gradient(circle at 12% 8%, rgba(0, 31, 84, .5), transparent 30%), radial-gradient(circle at 92% 90%, rgba(215, 38, 61, .12), transparent 25%);
-		}
-		button, input { font: inherit; }
-		button { cursor: pointer; }
-		.app-shell { width: min(100% - 40px, 980px); margin: 0 auto; padding: 36px 0 64px; }
-		.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 64px; }
-		.brand { display: flex; gap: 11px; align-items: center; font-weight: 800; letter-spacing: -.04em; font-size: 1.25rem; }
-		.brand-mark { display: grid; width: 32px; height: 32px; place-items: center; color: #fff; background: var(--accent); border-radius: 10px; box-shadow: 0 7px 15px rgba(215, 38, 61, .3); }
-		.theme-toggle { display: flex; align-items: center; gap: 9px; padding: 9px 13px; color: var(--muted); background: var(--surface); border: 1px solid var(--line); border-radius: 100px; font-size: .82rem; transition: border .2s, color .2s, transform .2s; }
-		.theme-toggle:hover { color: var(--ink); border-color: var(--accent); transform: translateY(-1px); }
-		.theme-icon { font-size: 1rem; }
-		.intro { max-width: 680px; margin-bottom: 32px; animation: rise .65s ease both; }
-		.eyebrow { margin: 0 0 12px; color: var(--accent); font-size: .75rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
-		h1 { margin: 0; font-size: clamp(2.5rem, 7vw, 5.2rem); line-height: .95; letter-spacing: -.075em; }
-		.intro-copy { max-width: 475px; margin: 20px 0 0; color: var(--muted); line-height: 1.65; font-size: 1.02rem; }
-		.todo-card { padding: 25px; background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); backdrop-filter: blur(16px); animation: rise .65s .1s ease both; }
-		.task-form { display: flex; gap: 10px; padding-bottom: 25px; border-bottom: 1px solid var(--line); }
-		.task-input { min-width: 0; flex: 1; padding: 14px 16px; color: var(--ink); background: var(--surface-strong); border: 1px solid var(--line); border-radius: 12px; outline: 0; transition: border .2s, box-shadow .2s; }
-		.task-input::placeholder { color: var(--muted); }
-		.task-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
-		.add-button { padding: 0 20px; color: #fff; background: var(--accent); border: 0; border-radius: 12px; font-weight: 800; transition: background .2s, transform .2s; }
-		.add-button:hover { background: var(--accent-strong); transform: translateY(-1px); }
-		.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 21px 0 17px; }
-		.task-count { margin: 0; color: var(--muted); font-size: .88rem; }
-		.task-count strong { color: var(--ink); }
-		.filters { display: flex; gap: 4px; padding: 4px; background: var(--surface-strong); border: 1px solid var(--line); border-radius: 10px; }
-		.filter-button { padding: 6px 11px; color: var(--muted); background: transparent; border: 0; border-radius: 7px; font-size: .78rem; font-weight: 700; }
-		.filter-button.active { color: var(--ink); background: var(--accent-soft); }
-		.task-list { display: grid; gap: 9px; min-height: 76px; }
-		.task-item { display: flex; align-items: center; gap: 13px; padding: 15px 13px; background: var(--surface-strong); border: 1px solid var(--line); border-radius: 13px; animation: task-in .35s ease both; }
-		.task-item.completed { opacity: .66; }
-		.check-button { flex: 0 0 auto; width: 22px; height: 22px; padding: 0; color: transparent; background: transparent; border: 1.5px solid var(--muted); border-radius: 50%; transition: background .2s, border .2s, transform .2s; }
-		.check-button:hover { border-color: var(--accent); transform: scale(1.08); }
-		.completed .check-button { color: #fff; background: var(--accent); border-color: var(--accent); font-size: .74rem; }
-		.task-text { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: .95rem; line-height: 1.4; }
-		.completed .task-text { color: var(--muted); text-decoration: line-through; }
-		.delete-button { padding: 5px; color: var(--muted); background: transparent; border: 0; font-size: 1.1rem; line-height: 1; opacity: .45; transition: color .2s, opacity .2s; }
-		.task-item:hover .delete-button, .delete-button:focus { color: var(--danger); opacity: 1; }
-		.empty-state { display: grid; place-items: center; padding: 25px 10px; color: var(--muted); text-align: center; }
-		.empty-state p { margin: 0; font-size: .9rem; }
-		.footer-note { margin: 22px 0 0; color: var(--muted); font-size: .76rem; text-align: center; }
-		@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-		@keyframes task-in { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-		@media (max-width: 620px) {
-			.app-shell { width: min(100% - 28px, 980px); padding-top: 22px; }
-			.topbar { margin-bottom: 49px; }
-			.theme-toggle span:last-child { display: none; }
-			.todo-card { padding: 17px; border-radius: 19px; }
-			.task-form { flex-direction: column; }
-			.add-button { min-height: 46px; }
-			.toolbar { align-items: flex-start; flex-direction: column; }
-			.filters { width: 100%; }
-			.filter-button { flex: 1; }
-		}
-	</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050811">
+<title>SYSTEM | Mastery, Capital, Control</title>
+<style>
+:root{--bg:#050811;--surface:#0a192f;--surface-2:#001f54;--line:#143866;--red:#d7263d;--red-hi:#e63946;--white:#fff;--muted:#9baac2;--green:#57d6a0;--shadow:0 18px 50px #0008}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--white);font-family:"Trebuchet MS","Segoe UI",sans-serif;letter-spacing:.02em}button,input,select{font:inherit}button{cursor:pointer}.app{width:min(1440px,calc(100% - 34px));margin:auto;padding:22px 0 70px}.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-bottom:18px}.brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.18em;font-size:1.25rem}.mark{display:grid;place-items:center;width:36px;height:36px;background:var(--red);font-weight:900;clip-path:polygon(0 0,100% 0,100% 76%,76% 100%,0 100%)}.save-btn{border:1px solid #ff6374;background:var(--red);color:white;padding:13px 22px;font-weight:900;letter-spacing:.15em;box-shadow:0 0 22px #d7263d66;transition:.2s}.save-btn:hover{background:var(--red-hi);transform:translateY(-2px)}.save-state{font-size:.7rem;color:var(--muted);text-align:right;margin-top:7px}.save-state.dirty{color:#ff7a8a}.hero{display:flex;align-items:end;justify-content:space-between;gap:30px;padding:42px 0 30px}.eyebrow,.section-kicker{color:var(--red-hi);font-size:.7rem;font-weight:900;letter-spacing:.2em}.hero h1{margin:9px 0 0;font-size:clamp(2.6rem,7vw,6.4rem);line-height:.86;letter-spacing:-.07em}.hero p{max-width:440px;color:var(--muted);line-height:1.6;margin:0}.tabs{display:flex;gap:7px;overflow:auto;padding:0 0 14px;border-bottom:1px solid var(--line)}.tab{white-space:nowrap;color:var(--muted);background:transparent;border:1px solid var(--line);padding:12px 15px;font-size:.76rem;font-weight:900;letter-spacing:.08em}.tab:hover,.tab.active{color:var(--white);border-color:var(--red);background:#401525}.view{display:none;padding-top:27px}.view.active{display:block;animation:rise .35s ease both}.grid{display:grid;gap:16px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.panel{background:linear-gradient(145deg,#0a192f,#071225);border:1px solid var(--line);padding:20px;box-shadow:var(--shadow)}.panel h2,.panel h3{margin:0}.panel h2{font-size:1.05rem;letter-spacing:.04em}.panel h3{font-size:.83rem;letter-spacing:.1em}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.muted{color:var(--muted);font-size:.78rem}.stat{font-size:2.1rem;font-weight:900;margin:10px 0 2px}.red{color:var(--red-hi)}.green{color:var(--green)}.progress-row{margin:17px 0}.progress-label{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:7px}.bar{height:8px;background:#061020;border:1px solid #1c416c;overflow:hidden}.bar span{display:block;height:100%;background:var(--red-hi);transition:width .3s}.bar.greenbar span{background:var(--green)}.quest{display:flex;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #14345d}.quest:last-child{border-bottom:0}.quest input,.chapter-check input{accent-color:var(--red);width:17px;height:17px}.quest label{flex:1;font-size:.85rem}.level{display:flex;align-items:center;gap:15px}.level-badge{display:grid;place-items:center;width:65px;height:65px;border:2px solid var(--red);color:var(--red-hi);font-size:1.5rem;font-weight:900}.level-copy{flex:1}.level-copy strong{font-size:1.2rem}.field-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:.68rem;color:var(--muted);font-weight:800;letter-spacing:.08em;text-transform:uppercase}.field input,.field select{width:100%;padding:11px 12px;color:var(--white);background:#061020;border:1px solid #1c416c;border-radius:0;outline:0}.field input:focus,.field select:focus{border-color:var(--red-hi)}.action{border:1px solid var(--red);background:var(--red);color:#fff;padding:11px 15px;font-weight:900;font-size:.76rem}.action:hover{background:var(--red-hi)}.subject{border-left:3px solid var(--red);margin-bottom:18px}.subject:last-child{margin-bottom:0}.subject-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#001f54}.subject-head strong{letter-spacing:.1em}.subsections{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;padding:15px}.subsection{border:1px solid var(--line);padding:14px;background:#071225}.subsection h4{margin:0 0 12px;font-size:.78rem;color:var(--red-hi);letter-spacing:.08em}.chapter-card{padding:15px;background:#061020;border:1px solid var(--line);margin-top:10px}.chapter-top{display:flex;justify-content:space-between;gap:10px}.chapter-top strong{font-size:.88rem}.chapter-checks{display:flex;flex-wrap:wrap;gap:10px;margin:15px 0}.chapter-check{display:flex;gap:5px;align-items:center;color:var(--muted);font-size:.7rem}.question-line{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:12px}.question-line strong{font-size:.82rem}.tally{display:flex;gap:6px}.tally input{width:70px;padding:8px;color:#fff;background:#050811;border:1px solid var(--line)}.micro-log{margin:10px 0 0;color:var(--muted);font-size:.7rem;line-height:1.6}.empty{padding:25px;text-align:center;border:1px dashed var(--line);color:var(--muted);font-size:.8rem}.table-wrap{overflow-x:auto}.table{width:100%;border-collapse:collapse;font-size:.78rem}.table th,.table td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);white-space:nowrap}.table th{color:var(--muted);font-size:.65rem;letter-spacing:.1em}.table td:last-child{color:var(--red-hi);font-weight:900}.money-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.money-stat{padding:17px 14px;border-top:2px solid var(--red);background:#071225}.money-stat small{display:block;color:var(--muted);font-size:.65rem;letter-spacing:.1em}.money-stat strong{display:block;font-size:1.45rem;margin-top:9px}.audit{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.audit div{padding:13px;border:1px solid var(--line)}.audit small{display:block;color:var(--muted);font-size:.65rem;margin-bottom:7px}.audit strong{font-size:1.1rem}.toast{position:fixed;right:20px;bottom:20px;background:var(--white);color:#050811;border-left:7px solid var(--red);padding:16px 20px;font-weight:900;box-shadow:var(--shadow);transform:translateY(130px);opacity:0;transition:.3s;z-index:5}.toast.show{transform:translateY(0);opacity:1}.modal{position:fixed;inset:0;display:none;place-items:center;background:#000b;z-index:4;padding:18px}.modal.open{display:grid}.modal-box{width:min(520px,100%);background:var(--surface);border:1px solid var(--red);padding:22px}.modal-head{display:flex;justify-content:space-between;margin-bottom:20px}.modal-head button{border:0;background:transparent;color:white;font-size:1.4rem}.span-2{grid-column:span 2}@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@media(max-width:760px){.app{width:min(100% - 24px,1440px)}.hero{display:block}.hero p{margin-top:24px}.grid.two,.grid.three{grid-template-columns:1fr}.money-grid,.audit{grid-template-columns:1fr}.field-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.span-2{grid-column:auto}.topbar{align-items:flex-start}.save-btn{padding:11px 14px}.question-line{align-items:flex-start;flex-direction:column}.tally{width:100%}.tally input{flex:1}.tally .action{flex:1}}
+/* Liquid glass system */
+:root{--glass:rgba(10,25,47,.65);--glass-strong:rgba(0,31,84,.62);--glass-line:rgba(255,255,255,.1);--glass-shadow:0 8px 32px rgba(0,0,0,.37);--ease:all .3s cubic-bezier(.4,0,.2,1)}
+body{background:radial-gradient(circle at 8% 0%,rgba(0,31,84,.7),transparent 30rem),radial-gradient(circle at 92% 18%,rgba(215,38,61,.12),transparent 26rem),var(--bg);background-attachment:fixed}
+.app{position:relative}.topbar{border-bottom-color:var(--glass-line)}
+.mark,.save-btn,.action,.tab,.money-stat,.panel,.subject,.subsection,.chapter-card,.modal-box,.toast{border-radius:18px}
+.panel,.subject,.subsection,.chapter-card,.money-stat,.modal-box{background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--glass-line);box-shadow:var(--glass-shadow)}
+.panel{padding:24px}.subject,.subsection,.chapter-card{padding:18px}.money-stat{padding:20px}
+.tabs{gap:10px;border-bottom-color:var(--glass-line);padding:8px 0 16px}.tab{border-color:var(--glass-line);background:rgba(255,255,255,.035);padding:13px 18px;transition:var(--ease)}
+.tab:hover{color:var(--white);border-color:rgba(230,57,70,.7);background:rgba(215,38,61,.18);transform:translateY(-1px)}.tab.active{background:linear-gradient(135deg,var(--red-hi),#b0182b);border-color:#ff6374;box-shadow:0 0 15px rgba(230,57,70,.4),0 8px 22px rgba(0,0,0,.25)}
+.save-btn,.action{border:1px solid rgba(255,128,139,.75);background:linear-gradient(135deg,var(--red-hi),#b0182b);box-shadow:0 0 15px rgba(230,57,70,.4);transition:var(--ease)}.save-btn:hover,.action:hover{filter:brightness(1.12);box-shadow:0 0 25px rgba(230,57,70,.58);transform:translateY(-2px)}
+input,select{border-radius:14px;border:1px solid var(--glass-line);background:rgba(5,8,17,.62);color:var(--white);transition:var(--ease)}input:focus,select:focus{outline:none;border-color:var(--red-hi);box-shadow:0 0 0 3px rgba(230,57,70,.15),0 0 15px rgba(230,57,70,.2)}
+.bar{background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}.bar span{background:linear-gradient(90deg,var(--red),var(--red-hi));box-shadow:0 0 12px rgba(230,57,70,.65)}
+.quest{border-color:var(--glass-line);background:rgba(255,255,255,.035);border-radius:16px}.level-badge{border-radius:18px;box-shadow:0 0 22px rgba(230,57,70,.35)}
+.view.active{animation:rise .35s ease both}.modal{background:rgba(5,8,17,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+@media(max-width:700px){.app{width:min(100% - 22px,1440px);padding-top:14px}.topbar{align-items:flex-start}.hero{display:block;padding:30px 0 24px}.hero p{margin-top:24px}.panel{padding:18px}.panel-head{align-items:flex-start;gap:14px;flex-wrap:wrap}.action{min-height:46px}}
+/* Apple-inspired depth, refraction, and tactile motion */
+body:before,body:after{content:"";position:fixed;z-index:-1;pointer-events:none;border-radius:50%;filter:blur(30px);animation:ambientDrift 16s ease-in-out infinite alternate}
+body:before{width:46vw;height:46vw;left:-16vw;top:-18vw;background:radial-gradient(circle,rgba(0,31,84,.9),rgba(0,31,84,0) 68%)}
+body:after{width:38vw;height:38vw;right:-12vw;top:25vh;background:radial-gradient(circle,rgba(215,38,61,.15),rgba(215,38,61,0) 70%);animation-delay:-7s}
+.panel,.subject,.subsection,.chapter-card,.money-stat,.modal-box{background:rgba(10,25,47,.45);backdrop-filter:blur(25px) saturate(180%);-webkit-backdrop-filter:blur(25px) saturate(180%);border:1px solid rgba(255,255,255,.12);border-top-color:rgba(255,255,255,.22);border-radius:20px;box-shadow:0 16px 40px rgba(0,0,0,.5),inset 0 1px 1px rgba(255,255,255,.15)}
+.tab,.action,.save-btn{transition:transform .2s cubic-bezier(.34,1.56,.64,1),filter .3s ease,box-shadow .3s ease}.tab:active,.action:active,.save-btn:active{transform:scale(.95)}
+.save-btn{animation:savePulse 2.8s ease-in-out infinite}.toast{top:20px;bottom:auto;left:50%;right:auto;transform:translate(-50%,-150%);opacity:0;padding:14px 22px;background:rgba(230,57,70,.25);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,77,109,.6);box-shadow:0 0 20px rgba(230,57,70,.4);color:#ffffff!important;font-weight:700;letter-spacing:.08em;transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .25s ease;z-index:20}.toast.show{transform:translate(-50%,0);opacity:1}
+.xp-bubble{position:fixed;z-index:30;left:50%;top:74px;pointer-events:none;color:#fff;font-weight:900;letter-spacing:.08em;text-shadow:0 2px 10px rgba(0,0,0,.5);animation:xpFloat 1.15s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes ambientDrift{from{transform:translate3d(-2%,0,0) scale(1)}to{transform:translate3d(3%,4%,0) scale(1.08)}}@keyframes savePulse{0%,100%{box-shadow:0 0 15px rgba(230,57,70,.4)}50%{box-shadow:0 0 28px rgba(230,57,70,.72),0 0 56px rgba(230,57,70,.18)}}@keyframes xpFloat{0%{opacity:0;transform:translate(-50%,18px) scale(.7)}18%{opacity:1;transform:translate(-50%,0) scale(1.08)}75%{opacity:1;transform:translate(-50%,-42px) scale(1)}100%{opacity:0;transform:translate(-50%,-76px) scale(.9)}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
 </head>
 <body>
-	<main class="app-shell">
-		<header class="topbar">
-			<div class="brand"><span class="brand-mark" aria-hidden="true">✓</span><span>SYSTEM</span></div>
-			<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to dark mode"><span class="theme-icon" aria-hidden="true">☾</span><span>Dark mode</span></button>
-		</header>
-
-		<section class="intro" aria-labelledby="page-title">
-			<p class="eyebrow">A little clarity, daily</p>
-			<h1 id="page-title">Make space for<br>what matters.</h1>
-			<p class="intro-copy">A calm place for the small promises you make to yourself. Keep it simple, keep moving.</p>
-		</section>
-
-		<section class="todo-card" aria-label="To-do list">
-			<form class="task-form" id="taskForm">
-				<input class="task-input" id="taskInput" type="text" maxlength="120" placeholder="What needs your attention?" aria-label="New task" autocomplete="off">
-				<button class="add-button" type="submit">Add task</button>
-			</form>
-			<div class="toolbar">
-				<p class="task-count" id="taskCount" aria-live="polite"><strong>0 tasks</strong> to go</p>
-				<nav class="filters" aria-label="Filter tasks">
-					<button class="filter-button active" data-filter="all" type="button">All</button>
-					<button class="filter-button" data-filter="active" type="button">Active</button>
-					<button class="filter-button" data-filter="completed" type="button">Done</button>
-				</nav>
-			</div>
-			<div class="task-list" id="taskList"></div>
-			<p class="footer-note">Your list stays on this device.</p>
-		</section>
-	</main>
-
-	<script>
-		const storageKey = "system-tasks";
-		const themeKey = "system-theme";
-		const taskForm = document.querySelector("#taskForm");
-		const taskInput = document.querySelector("#taskInput");
-		const taskList = document.querySelector("#taskList");
-		const taskCount = document.querySelector("#taskCount");
-		const themeToggle = document.querySelector("#themeToggle");
-		const savedTasks = localStorage.getItem(storageKey) || localStorage.getItem("daymark-tasks") || "[]";
-		let tasks = JSON.parse(savedTasks);
-		let currentFilter = "all";
-
-		function saveTasks() { localStorage.setItem(storageKey, JSON.stringify(tasks)); }
-
-		function render() {
-			const visibleTasks = tasks.filter(task => currentFilter === "all" || (currentFilter === "completed" ? task.completed : !task.completed));
-			const remaining = tasks.filter(task => !task.completed).length;
-			taskCount.innerHTML = `<strong>${remaining} ${remaining === 1 ? "task" : "tasks"}</strong> to go`;
-			taskList.innerHTML = "";
-			if (!visibleTasks.length) {
-				const emptyMessage = tasks.length ? "Nothing here right now." : "Your list is clear. Add something to begin.";
-				taskList.innerHTML = `<div class="empty-state"><p>${emptyMessage}</p></div>`;
-				return;
-			}
-			visibleTasks.forEach(task => {
-				const item = document.createElement("article");
-				item.className = `task-item${task.completed ? " completed" : ""}`;
-				item.dataset.id = task.id;
-				item.innerHTML = `<button class="check-button" type="button" aria-label="${task.completed ? "Mark task active" : "Mark task complete"}">${task.completed ? "✓" : ""}</button><span class="task-text"></span><button class="delete-button" type="button" aria-label="Delete task">×</button>`;
-				item.querySelector(".task-text").textContent = task.text;
-				taskList.appendChild(item);
-			});
-		}
-
-		taskForm.addEventListener("submit", event => {
-			event.preventDefault();
-			const text = taskInput.value.trim();
-			if (!text) { taskInput.focus(); return; }
-			tasks.unshift({ id: Date.now().toString(), text, completed: false });
-			saveTasks();
-			taskInput.value = "";
-			currentFilter = "all";
-			document.querySelectorAll(".filter-button").forEach(button => button.classList.toggle("active", button.dataset.filter === currentFilter));
-			render();
-			taskInput.focus();
-		});
-
-		taskList.addEventListener("click", event => {
-			const item = event.target.closest(".task-item");
-			if (!item) return;
-			const task = tasks.find(entry => entry.id === item.dataset.id);
-			if (event.target.closest(".check-button")) task.completed = !task.completed;
-			if (event.target.closest(".delete-button")) tasks = tasks.filter(entry => entry.id !== item.dataset.id);
-			saveTasks();
-			render();
-		});
-
-		document.querySelectorAll(".filter-button").forEach(button => button.addEventListener("click", () => {
-			currentFilter = button.dataset.filter;
-			document.querySelectorAll(".filter-button").forEach(filter => filter.classList.toggle("active", filter === button));
-			render();
-		}));
-
-		function setTheme(theme) {
-			document.documentElement.dataset.theme = theme;
-			localStorage.setItem(themeKey, theme);
-			const dark = theme === "dark";
-			themeToggle.querySelector(".theme-icon").textContent = dark ? "☀" : "☾";
-			themeToggle.querySelector("span:last-child").textContent = dark ? "Light mode" : "Dark mode";
-			themeToggle.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
-		}
-		themeToggle.addEventListener("click", () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark"));
-		setTheme(localStorage.getItem(themeKey) || "light");
-		render();
-	</script>
+<main class="app">
+<header class="topbar"><div class="brand"><span class="mark">S</span><span>SYSTEM</span></div><div><button class="save-btn" id="saveBtn">SAVE</button><div class="save-state" id="saveState">MEMORY SYNCED</div></div></header>
+<section class="hero"><div><div class="eyebrow">HUNTER OPERATING SYSTEM / 2026</div><h1>BUILD YOUR<br><span class="red">EDGE.</span></h1></div><p>One command center for daily execution, academic mastery, capital awareness, and the discipline to commit your progress.</p></section>
+<nav class="tabs" aria-label="Primary navigation"><button class="tab active" data-view="daily">DAILY QUESTS</button><button class="tab" data-view="syllabus">SYLLABUS</button><button class="tab" data-view="tests">TEST VAULT</button><button class="tab" data-view="capital">CAPITAL VAULT</button></nav>
+<section class="view active" id="daily"><div class="grid two"><div class="panel"><div class="panel-head"><div><div class="section-kicker">TODAY'S DIRECTIVES</div><h2>DAILY QUESTS</h2></div><span class="muted" id="questDate"></span></div><div id="questList"></div></div><div class="panel"><div class="section-kicker">HUNTER STATUS</div><div class="level" style="margin-top:18px"><div class="level-badge" id="level">01</div><div class="level-copy"><strong id="levelTitle">INITIATE</strong><div class="muted" id="expText">0 / 100 EXP</div><div class="bar" style="margin-top:9px"><span id="expBar" style="width:0%"></span></div></div></div><div class="grid three" style="margin-top:25px"><div><div class="muted">QUESTS</div><div class="stat" id="questScore">0/4</div></div><div><div class="muted">CHAPTERS</div><div class="stat" id="chapterScore">0</div></div><div><div class="muted">STREAK</div><div class="stat red">01</div></div></div></div></div><div class="grid three" style="margin-top:16px"><div class="panel"><div class="section-kicker">PHYSICS</div><div class="stat" id="physicsMini">0%</div><div class="bar"><span id="physicsMiniBar"></span></div></div><div class="panel"><div class="section-kicker">BIOLOGY</div><div class="stat" id="biologyMini">0%</div><div class="bar"><span id="biologyMiniBar"></span></div></div><div class="panel"><div class="section-kicker">CHEMISTRY</div><div class="stat" id="chemistryMini">0%</div><div class="bar"><span id="chemistryMiniBar"></span></div></div></div></section>
+<section class="view" id="syllabus"><div class="panel"><div class="panel-head"><div><div class="section-kicker">ACADEMIC MASTERY ENGINE</div><h2>SYLLABUS CONTROL</h2></div><button class="action" id="openChapter">+ ADD CHAPTER</button></div><div id="subjects"></div></div></section>
+<section class="view" id="tests"><div class="grid two"><div class="panel"><div class="section-kicker">QUICK ENTRY</div><h2 style="margin:8px 0 18px">LOG MOCK RESULT</h2><form id="testForm" class="field-grid"><div class="field full"><label for="testName">Test Name</label><input id="testName" required placeholder="NEET Full Mock 04"></div><div class="field"><label for="testDate">Date</label><input id="testDate" type="date" required></div><div class="field"><label for="testType">Type</label><select id="testType"><option>Full Mock</option><option>Part Test</option></select></div><div class="field"><label for="totalMarks">Total Marks</label><input id="totalMarks" type="number" min="1" required placeholder="720"></div><div class="field"><label for="scoredMarks">Scored Marks</label><input id="scoredMarks" type="number" min="0" required placeholder="640"></div><button class="action span-2" type="submit">ADD TO VAULT</button></form></div><div class="panel"><div class="section-kicker">PERFORMANCE SIGNAL</div><div class="stat" id="avgAccuracy">0%</div><div class="muted">AVERAGE ACCURACY</div><div class="bar" style="margin-top:18px"><span id="accuracyBar"></span></div><div class="muted" style="margin-top:16px">Tests logged: <strong id="testCount">0</strong></div></div></div><div class="panel" style="margin-top:16px"><div class="panel-head"><h2>MOCK TEST HISTORY</h2><span class="muted">CRIMSON = VERIFIED SCORE</span></div><div class="table-wrap"><table class="table"><thead><tr><th>TEST</th><th>DATE</th><th>TYPE</th><th>SCORE</th><th>ACCURACY</th></tr></thead><tbody id="testRows"></tbody></table></div></div></section>
+<section class="view" id="capital"><div class="panel"><div class="section-kicker">PERSONAL ALLOWANCE VAULT</div><h2 style="margin:8px 0 18px">RESERVES OVERVIEW</h2><div class="money-grid"><div class="money-stat"><small>TOTAL FUNDS</small><strong id="totalFunds">₹0</strong></div><div class="money-stat"><small>CASH IN HAND</small><strong id="cashFunds">₹0</strong></div><div class="money-stat"><small>DIGITAL / ONLINE</small><strong id="digitalFunds">₹0</strong></div></div></div><div class="grid two" style="margin-top:16px"><div class="panel"><div class="section-kicker">INCOME</div><h2 style="margin:8px 0 18px">LOG ALLOWANCE</h2><form id="incomeForm" class="field-grid"><div class="field"><label for="incomeAmount">Amount (₹)</label><input id="incomeAmount" type="number" min="1" required></div><div class="field"><label for="incomeSource">Source</label><input id="incomeSource" required placeholder="Parents"></div><div class="field"><label for="incomeDestination">Destination</label><select id="incomeDestination"><option>Cash</option><option>Digital</option></select></div><button class="action" type="submit">LOG RECEIPT</button></form></div><div class="panel"><div class="section-kicker">OUTFLOW</div><h2 style="margin:8px 0 18px">LOG EXPENDITURE</h2><form id="expenseForm" class="field-grid"><div class="field"><label for="expenseItem">Item Name</label><input id="expenseItem" required placeholder="Practice books"></div><div class="field"><label for="expenseAmount">Amount (₹)</label><input id="expenseAmount" type="number" min="1" required></div><div class="field"><label for="expenseCategory">Category</label><select id="expenseCategory"><option>Academic</option><option>Food</option><option>Travel</option><option>Misc</option></select></div><div class="field"><label for="expenseSource">Deduct From</label><select id="expenseSource"><option>Cash</option><option>Digital</option></select></div><button class="action" type="submit">LOG SPEND</button></form></div></div><div class="panel" style="margin-top:16px"><div class="panel-head"><div><div class="section-kicker">MONTHLY DISCIPLINE AUDIT</div><h2 style="margin-top:8px">CAPITAL CONTROL</h2></div><span class="red" id="burnRate">0% BURN</span></div><div class="audit"><div><small>STARTING ALLOWANCE</small><strong id="startingAllowance">₹0</strong></div><div><small>SPENT THIS MONTH</small><strong id="spentMonth">₹0</strong></div><div><small>REMAINING CAPITAL</small><strong id="remainingCapital">₹0</strong></div></div><div class="bar" style="margin-top:18px"><span id="burnBar"></span></div></div><div class="panel" style="margin-top:16px"><div class="panel-head"><h2>TRANSACTION LOG</h2><span class="muted">MANUAL RECORD</span></div><div class="table-wrap"><table class="table"><thead><tr><th>DATE</th><th>TYPE</th><th>DETAIL</th><th>DESTINATION</th><th>AMOUNT</th></tr></thead><tbody id="transactionRows"></tbody></table></div></div></section>
+</main><div class="toast" id="toast">COMPLETED</div><div class="modal" id="chapterModal"><div class="modal-box"><div class="modal-head"><div><div class="section-kicker">SYLLABUS CONTROL</div><h2 style="margin-top:8px">ADD CHAPTER</h2></div><button id="closeChapter" aria-label="Close">×</button></div><form id="chapterForm" class="field-grid"><div class="field"><label for="chapterSubject">Subject</label><select id="chapterSubject"><option>Physics</option><option>Biology</option><option>Chemistry</option></select></div><div class="field"><label for="chapterSubsection">Subsection</label><select id="chapterSubsection"></select></div><div class="field full"><label for="chapterName">Chapter Name</label><input id="chapterName" required placeholder="Kinematics"></div><button class="action full" type="submit">CREATE CHAPTER</button></form></div></div>
+<script>
+const KEY="system-dashboard-v1",branches={Physics:["Unified Physics"],Biology:["Botany","Zoology"],Chemistry:["Physical Chemistry","Inorganic Chemistry","Organic Chemistry"]};
+const blank=()=>({quests:[{text:"Complete daily workout",done:false},{text:"Deep work study block",done:false},{text:"Review yesterday's errors",done:false},{text:"Plan tomorrow's attack",done:false}],chapters:[],tests:[],income:[],expenses:[]});let state=(()=>{try{return JSON.parse(localStorage.getItem(KEY))||blank()}catch{return blank()}})();const $=id=>document.getElementById(id),money=value=>`₹${Math.round(value).toLocaleString("en-IN")}`;
+function markDirty(){$("saveState").textContent="UNCOMMITTED CHANGES";$(`saveState`).classList.add("dirty")}function commit(){localStorage.setItem(KEY,JSON.stringify(state));$("saveState").textContent="MEMORY SYNCED";$("saveState").classList.remove("dirty");$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200)}function pct(done,total){return total?Math.round(done/total*100):0}function subjectStats(subject){const list=state.chapters.filter(c=>c.subject===subject);return pct(list.reduce((n,c)=>n+c.checks.filter(Boolean).length,0),list.length*5)}
+function renderSubjects(){const root=$("subjects");root.innerHTML="";Object.entries(branches).forEach(([subject,subs])=>{const wrap=document.createElement("div");wrap.className="subject";wrap.innerHTML=`<div class="subject-head"><strong>${subject.toUpperCase()}</strong><span class="red">${subjectStats(subject)}%</span></div><div class="bar"><span style="width:${subjectStats(subject)}%"></span></div><div class="subsections"></div>`;const holder=wrap.querySelector(".subsections");subs.forEach(sub=>{const chapters=state.chapters.filter(c=>c.subject===subject&&c.subsection===sub),progress=pct(chapters.reduce((n,c)=>n+c.checks.filter(Boolean).length,0),chapters.length*5),box=document.createElement("div");box.className="subsection";box.innerHTML=`<h4>${sub.toUpperCase()} <span style="float:right">${progress}%</span></h4><div class="bar"><span style="width:${progress}%"></span></div><div class="chapter-list"></div>`;chapters.forEach(ch=>{const card=document.createElement("div");card.className="chapter-card";card.innerHTML=`<div class="chapter-top"><strong>${ch.name}</strong><span class="muted">${ch.questions} Q / ${ch.pyqs} PYQ</span></div><div class="chapter-checks">${["Lectures Done","Notes Done","Revision 1","Revision 2","Revision 3"].map((label,i)=>`<label class="chapter-check"><input type="checkbox" data-id="${ch.id}" data-check="${i}" ${ch.checks[i]?"checked":""}>${label}</label>`).join("")}</div><div class="question-line"><strong>QUESTIONS PRACTICED: ${ch.questions}</strong><div class="tally"><input type="number" min="1" placeholder="+10" data-q="${ch.id}"><button class="action" data-add="${ch.id}">+ ADD</button></div></div><div class="micro-log">${ch.logs.length?ch.logs.slice(-3).reverse().join(" · "):"No question additions logged yet."}</div>`;card.querySelectorAll("input[type=checkbox]").forEach(input=>input.addEventListener("change",()=>{const target=state.chapters.find(c=>c.id===input.dataset.id);target.checks[+input.dataset.check]=input.checked;markDirty();renderAll()}));card.querySelector("[data-add]").addEventListener("click",()=>{const input=card.querySelector(`[data-q="${ch.id}"]`),amount=Number(input.value);if(!amount||amount<1)return;ch.questions+=amount;ch.logs.push(`+${amount} questions at ${new Date().toLocaleString()}`);input.value="";markDirty();renderAll()});box.querySelector(".chapter-list").appendChild(card)});holder.appendChild(box)});root.appendChild(wrap)})}
+function renderDaily(){const list=$("questList");list.innerHTML="";state.quests.forEach((q,i)=>{const row=document.createElement("div");row.className="quest";row.innerHTML=`<input type="checkbox" id="quest${i}" ${q.done?"checked":""}><label for="quest${i}">${q.text}</label>`;row.querySelector("input").addEventListener("change",e=>{q.done=e.target.checked;markDirty();renderAll()});list.appendChild(row)});const done=state.quests.filter(q=>q.done).length,exp=done*25+state.chapters.reduce((n,c)=>n+c.checks.filter(Boolean).length,0)*5,level=Math.floor(exp/100)+1;$("questScore").textContent=`${done}/${state.quests.length}`;$("level").textContent=String(level).padStart(2,"0");$("levelTitle").textContent=level>5?"ELITE HUNTER":level>2?"OPERATIVE":"INITIATE";$("expText").textContent=`${exp%100} / 100 EXP`;$("expBar").style.width=`${exp%100}%`;$("chapterScore").textContent=state.chapters.length;["Physics","Biology","Chemistry"].forEach(s=>{$(s.toLowerCase()+"Mini").textContent=subjectStats(s)+"%";$(s.toLowerCase()+"MiniBar").style.width=subjectStats(s)+"%"});$("questDate").textContent=new Date().toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}
+function renderTests(){const rows=$("testRows");rows.innerHTML="";state.tests.forEach(t=>{const tr=document.createElement("tr");tr.innerHTML=`<td>${t.name}</td><td>${t.date}</td><td>${t.type}</td><td>${t.scored} / ${t.total}</td><td>${t.accuracy}%</td>`;rows.appendChild(tr)});if(!state.tests.length)rows.innerHTML='<tr><td colspan="5" class="muted">No test records in the vault.</td></tr>';const avg=state.tests.length?Math.round(state.tests.reduce((n,t)=>n+t.accuracy,0)/state.tests.length):0;$("avgAccuracy").textContent=avg+"%";$("accuracyBar").style.width=avg+"%";$("testCount").textContent=state.tests.length}
+function renderCapital(){const income=state.income.reduce((n,x)=>n+x.amount,0),spent=state.expenses.reduce((n,x)=>n+x.amount,0),cash=state.income.filter(x=>x.destination==="Cash").reduce((n,x)=>n+x.amount,0)-state.expenses.filter(x=>x.source==="Cash").reduce((n,x)=>n+x.amount,0),digital=income-cash-state.expenses.filter(x=>x.source==="Digital").reduce((n,x)=>n+x.amount,0);$("totalFunds").textContent=money(cash+digital);$("cashFunds").textContent=money(cash);$("digitalFunds").textContent=money(digital);$("startingAllowance").textContent=money(income);$("spentMonth").textContent=money(spent);$("remainingCapital").textContent=money(cash+digital);const burn=income?Math.min(100,Math.round(spent/income*100)):0;$("burnRate").textContent=burn+"% BURN";$("burnBar").style.width=burn+"%";const rows=$("transactionRows");rows.innerHTML="";[...state.income.map(x=>({...x,type:"RECEIPT",detail:x.source,destination:x.destination})),...state.expenses.map(x=>({...x,type:"SPEND",detail:`${x.item} / ${x.category}`,destination:x.source}))].sort((a,b)=>b.id-a.id).forEach(x=>{const tr=document.createElement("tr");tr.innerHTML=`<td>${x.date}</td><td>${x.type}</td><td>${x.detail}</td><td>${x.destination}</td><td>${x.type==="SPEND"?"-":"+"}${money(x.amount)}</td>`;rows.appendChild(tr)});if(!rows.children.length)rows.innerHTML='<tr><td colspan="5" class="muted">No transactions recorded.</td></tr>'}
+function renderAll(){renderDaily();renderSubjects();renderTests();renderCapital()}document.querySelectorAll(".tab").forEach(tab=>tab.addEventListener("click",()=>{document.querySelectorAll(".tab,.view").forEach(el=>el.classList.remove("active"));tab.classList.add("active");$(tab.dataset.view).classList.add("active")}));$("saveBtn").addEventListener("click",commit);$("openChapter").addEventListener("click",()=>$("chapterModal").classList.add("open"));$("closeChapter").addEventListener("click",()=>$("chapterModal").classList.remove("open"));$("chapterSubject").addEventListener("change",()=>{const subject=$("chapterSubject").value;$("chapterSubsection").innerHTML=branches[subject].map(x=>`<option>${x}</option>`).join("")});$("chapterSubject").dispatchEvent(new Event("change"));
+$("chapterForm").addEventListener("submit",e=>{e.preventDefault();state.chapters.push({id:Date.now().toString(),subject:$("chapterSubject").value,subsection:$("chapterSubsection").value,name:$("chapterName").value.trim(),checks:[false,false,false,false,false],questions:0,pyqs:0,logs:[]});e.target.reset();$("chapterSubject").dispatchEvent(new Event("change"));$("chapterModal").classList.remove("open");markDirty();renderAll()});$("testForm").addEventListener("submit",e=>{e.preventDefault();const total=Number($("totalMarks").value),scored=Number($("scoredMarks").value);state.tests.unshift({name:$("testName").value.trim(),date:$("testDate").value,type:$("testType").value,total,scored,accuracy:Math.round(scored/total*100)});e.target.reset();markDirty();renderAll()});$("incomeForm").addEventListener("submit",e=>{e.preventDefault();state.income.push({id:Date.now(),date:new Date().toLocaleDateString(),amount:Number($("incomeAmount").value),source:$("incomeSource").value,destination:$("incomeDestination").value});e.target.reset();markDirty();renderAll()});$("expenseForm").addEventListener("submit",e=>{e.preventDefault();state.expenses.push({id:Date.now(),date:new Date().toLocaleDateString(),amount:Number($("expenseAmount").value),item:$("expenseItem").value.trim(),category:$("expenseCategory").value,source:$("expenseSource").value});e.target.reset();markDirty();renderAll()});renderAll();
+</script>
+<script>
+function showXpBubble(){const bubble=document.createElement("div");bubble.className="xp-bubble";bubble.textContent="+50 EXP";document.body.appendChild(bubble);setTimeout(()=>bubble.remove(),1200)}
+document.addEventListener("change",event=>{if(event.target.matches("#questList input[type=checkbox]")&&event.target.checked)showXpBubble()});document.addEventListener("click",event=>{if(event.target.closest("[data-add]"))showXpBubble();if(event.target.closest("#saveBtn"))$("toast").textContent="COMPLETED"});
+</script>
 </body>
 </html>
