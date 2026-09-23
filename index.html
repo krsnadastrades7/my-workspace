@@ -66,6 +66,15 @@
       background: rgba(255, 255, 255, 0.15);
       border-radius: 9999px;
     }
+
+    /* iOS clean scroll container */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
     
     /* Apple Spring Motion classes */
     .spring-tap {
@@ -915,27 +924,243 @@
       </div>
     </div>
 
-    <!-- MODAL 3: PRESET GOAL PICKER DRAWER -->
-    <div id="goalPickerModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <!-- MODAL 3: PRESET & CUSTOM GOAL PICKER DRAWER -->
+    <div id="goalPickerModal" onclick="if (event.target === this) closeGoalPickerDrawer()" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div class="liquid-card w-full max-w-sm rounded-t-[36px] sm:rounded-3xl p-6 space-y-4 modal-enter-spring max-h-[85vh] flex flex-col">
         
         <div class="flex items-center justify-between pb-2 border-b border-white/[0.08] shrink-0">
           <div>
-            <h3 class="font-extrabold text-base text-white">Preset Goal Library</h3>
-            <p class="text-xs text-zinc-400">Pick active habits for your duo pod</p>
+            <h3 class="font-extrabold text-base text-white">Manage Goals</h3>
+            <p class="text-xs text-zinc-400">Curate active habits &amp; create custom goals</p>
           </div>
           <button onclick="closeGoalPickerDrawer()" class="w-8 h-8 rounded-full bg-zinc-900 text-zinc-400 hover:text-white flex items-center justify-center font-bold spring-tap border border-white/10">✕</button>
         </div>
 
-        <!-- Presets List -->
-        <div id="presetGoalList" class="flex-1 overflow-y-auto space-y-2.5 pr-1">
-          <!-- Dynamically populated presets -->
+        <!-- Apple-styled "+ Create Custom Goal" Button -->
+        <button onclick="openCustomGoalModal()" class="w-full p-3.5 rounded-2xl bg-gradient-to-r from-emerald-500/15 via-zinc-800/80 to-zinc-900 border border-emerald-500/30 hover:border-emerald-500/60 flex items-center justify-between text-white font-bold text-xs shadow-lg shadow-black/20 spring-tap group transition-all shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-black text-lg border border-emerald-500/30 group-hover:scale-105 transition-transform shadow-[0_0_12px_rgba(16,185,129,0.25)]">
+              +
+            </div>
+            <div class="text-left">
+              <div class="font-black text-sm text-white flex items-center gap-1.5">
+                <span>+ Create Custom Goal</span>
+                <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono tracking-wider uppercase font-semibold">Tether</span>
+              </div>
+              <div class="text-[11px] text-zinc-400 font-medium">Design your own habit with custom targets</div>
+            </div>
+          </div>
+          <span class="text-zinc-500 group-hover:text-emerald-400 transition-colors text-lg font-bold pr-1">›</span>
+        </button>
+
+        <!-- Presets & Custom Habits List -->
+        <div id="presetGoalList" class="flex-1 overflow-y-auto space-y-4 pr-1">
+          <!-- Dynamically populated custom goals and presets -->
         </div>
 
-        <!-- Bottom Done button -->
-        <div class="pt-2 border-t border-white/[0.08] shrink-0">
+        <!-- Bottom Action Buttons: Done button -->
+        <div class="pt-2 border-t border-white/[0.08] shrink-0 space-y-2">
           <button onclick="closeGoalPickerDrawer()" class="w-full py-2.5 rounded-xl text-white font-bold text-xs shadow-md spring-tap" style="background-color: var(--u1-color);">
-            Save &amp; Update Pod
+            Done &amp; Update Pod
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MODAL 3B: TETHER CUSTOM GOAL CREATION DRAWER / MODAL -->
+    <div id="customGoalModal" onclick="if (event.target === this) closeCustomGoalModal()" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="liquid-card w-full max-w-sm rounded-t-[36px] sm:rounded-3xl p-6 space-y-4 modal-enter-spring max-h-[90vh] flex flex-col overflow-hidden">
+        
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between pb-2 border-b border-white/[0.08] shrink-0">
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h3 class="font-extrabold text-base text-white">New Custom Goal</h3>
+              <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono uppercase font-semibold">Tether</span>
+            </div>
+            <p class="text-xs text-zinc-400">Design your personalized habit &amp; target</p>
+          </div>
+          <button onclick="closeCustomGoalModal()" class="w-8 h-8 rounded-full bg-zinc-900 text-zinc-400 hover:text-white flex items-center justify-center font-bold spring-tap border border-white/10">✕</button>
+        </div>
+
+        <!-- Scrollable Form Container -->
+        <div class="flex-1 overflow-y-auto space-y-4 pr-1 -mr-1">
+
+          <!-- Live Preview Pill Card -->
+          <div class="p-3.5 rounded-2xl bg-zinc-900/90 border border-white/10 flex items-center justify-between shadow-inner">
+            <div class="flex items-center gap-3 min-w-0 flex-1 pr-2">
+              <div id="previewGoalIconBg" class="w-10 h-10 rounded-xl flex items-center justify-center text-2xl transition-all shadow-sm shrink-0" style="background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35);">
+                <span id="previewGoalIcon">🎯</span>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-1.5">
+                  <h4 id="previewGoalName" class="font-extrabold text-sm text-white truncate">MCQ Practice</h4>
+                  <span id="previewGoalTypeBadge" class="text-[9px] px-1.5 py-0.2 rounded-md bg-zinc-800 text-zinc-300 font-mono font-medium shrink-0">Count It</span>
+                </div>
+                <span id="previewGoalTargetText" class="text-[11px] text-zinc-400 font-mono block truncate">Target: 50 MCQs • Every day</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end shrink-0">
+              <span class="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">Accent</span>
+              <span id="previewColorDot" class="w-3.5 h-3.5 rounded-full border border-white/30 mt-0.5 shadow-sm transition-all" style="background-color: #10b981;"></span>
+            </div>
+          </div>
+
+          <!-- 1. HABIT NAME INPUT -->
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Habit Name</label>
+              <span class="text-[10px] text-zinc-500 font-mono">Required</span>
+            </div>
+            <input type="text" id="customGoalName" oninput="updateCustomGoalPreview()" placeholder="e.g., MCQ Practice, Deep Work, Pushups" class="w-full px-4 py-2.5 rounded-xl bg-zinc-950 border border-white/10 text-sm font-semibold text-white placeholder-zinc-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/50 transition-all">
+            
+            <!-- Quick Suggestions Row -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pt-1 pb-0.5 no-scrollbar text-xs">
+              <span class="text-[10px] text-zinc-500 font-mono shrink-0">Quick:</span>
+              <button type="button" onclick="applyHabitPreset('MCQ Practice', '📝', 'counter', 50, 'MCQs', 10, 'Every day', '#10b981')" class="px-2.5 py-0.8 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-[11px] font-semibold shrink-0 spring-subtle border border-white/10">📝 MCQ Practice</button>
+              <button type="button" onclick="applyHabitPreset('Deep Work', '💻', 'counter', 45, 'mins', 15, '5x a week', '#0ea5e9')" class="px-2.5 py-0.8 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-[11px] font-semibold shrink-0 spring-subtle border border-white/10">💻 Deep Work</button>
+              <button type="button" onclick="applyHabitPreset('Pushups', '💪', 'counter', 50, 'reps', 10, 'Every day', '#f59e0b')" class="px-2.5 py-0.8 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-[11px] font-semibold shrink-0 spring-subtle border border-white/10">💪 Pushups</button>
+              <button type="button" onclick="applyHabitPreset('Hydration', '💧', 'counter', 8, 'glasses', 1, 'Every day', '#06b6d4')" class="px-2.5 py-0.8 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-[11px] font-semibold shrink-0 spring-subtle border border-white/10">💧 Hydration</button>
+              <button type="button" onclick="applyHabitPreset('Cold Shower', '🧊', 'boolean', 1, 'session', 1, 'Every day', '#8b5cf6')" class="px-2.5 py-0.8 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 text-[11px] font-semibold shrink-0 spring-subtle border border-white/10">🧊 Cold Shower</button>
+            </div>
+          </div>
+
+          <!-- 2. TRACKING TYPE SELECTOR (Segmented iOS Toggle) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Tracking Type</label>
+              <span id="trackingTypeSummary" class="text-[10px] text-zinc-400 font-mono">Numeric target</span>
+            </div>
+            
+            <!-- Segmented Control Bar -->
+            <div class="p-1 rounded-2xl bg-zinc-950 border border-white/10 grid grid-cols-2 gap-1">
+              <button type="button" id="trackingTypeBtnBoolean" onclick="setCustomTrackingType('boolean')" class="py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-zinc-400 hover:text-white">
+                <span>✓</span>
+                <span>Yes / No</span>
+              </button>
+              <button type="button" id="trackingTypeBtnCounter" onclick="setCustomTrackingType('counter')" class="py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-zinc-800 text-white shadow-sm border border-white/10">
+                <span>🔢</span>
+                <span>Count It</span>
+              </button>
+            </div>
+
+            <!-- Hint Description -->
+            <p id="trackingTypeHint" class="text-[11px] text-zinc-400">
+              Track numeric progress towards a target number (e.g. 50 MCQs, 8 glasses).
+            </p>
+
+            <!-- Dynamic Numeric Target Fields (Shown for "Count It") -->
+            <div id="countItTargetSection" class="p-3.5 rounded-2xl bg-zinc-900/70 border border-white/10 space-y-3">
+              <div class="grid grid-cols-2 gap-3">
+                <!-- Target Number with Stepper -->
+                <div>
+                  <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Target Number</label>
+                  <div class="flex items-center gap-1">
+                    <button type="button" onclick="adjustCustomTarget(-5)" class="w-8 h-8 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center font-bold text-sm spring-tap border border-white/10">-</button>
+                    <input type="number" id="customGoalTarget" value="50" min="1" step="1" oninput="updateCustomGoalPreview()" class="w-full px-2 py-1.5 text-center rounded-lg bg-zinc-950 border border-white/10 text-white font-mono font-bold text-sm focus:outline-none focus:border-emerald-500">
+                    <button type="button" onclick="adjustCustomTarget(5)" class="w-8 h-8 rounded-lg bg-zinc-800 text-zinc-300 hover:text-white flex items-center justify-center font-bold text-sm spring-tap border border-white/10">+</button>
+                  </div>
+                </div>
+
+                <!-- Unit Input -->
+                <div>
+                  <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block mb-1">Unit Label</label>
+                  <input type="text" id="customGoalUnit" value="MCQs" placeholder="e.g. MCQs, mins" oninput="updateCustomGoalPreview()" class="w-full px-3 py-1.5 rounded-lg bg-zinc-950 border border-white/10 text-white font-semibold text-xs focus:outline-none focus:border-emerald-500">
+                </div>
+              </div>
+
+              <!-- Quick Unit Chips -->
+              <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+                <span class="text-[10px] text-zinc-500 font-mono shrink-0">Units:</span>
+                <button type="button" onclick="setCustomUnit('MCQs', 50, 10)" class="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-mono hover:bg-zinc-700">MCQs</button>
+                <button type="button" onclick="setCustomUnit('mins', 45, 15)" class="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-mono hover:bg-zinc-700">mins</button>
+                <button type="button" onclick="setCustomUnit('glasses', 8, 1)" class="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-mono hover:bg-zinc-700">glasses</button>
+                <button type="button" onclick="setCustomUnit('reps', 50, 10)" class="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-mono hover:bg-zinc-700">reps</button>
+                <button type="button" onclick="setCustomUnit('pages', 20, 5)" class="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-mono hover:bg-zinc-700">pages</button>
+                <button type="button" onclick="setCustomUnit('hrs', 2, 0.5)" class="px-2 py-0.5 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-mono hover:bg-zinc-700">hrs</button>
+              </div>
+            </div>
+
+            <!-- Yes/No Note (Shown for "Yes / No") -->
+            <div id="yesNoTargetSection" class="p-3 rounded-2xl bg-zinc-900/70 border border-white/10 hidden items-center gap-2.5">
+              <span class="text-xl">✅</span>
+              <div>
+                <span class="text-xs font-bold text-white block">One-Tap Daily Check</span>
+                <span class="text-[11px] text-zinc-400">Completed with a single tap each day (100% on check-off).</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. FREQUENCY SELECTOR -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Frequency</label>
+              <span id="frequencySummary" class="text-[10px] text-zinc-400 font-mono">Every day</span>
+            </div>
+            <div class="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-zinc-950 border border-white/10">
+              <button type="button" id="freqBtnEveryday" onclick="setCustomFrequency('Every day')" class="py-2 rounded-xl text-xs font-bold transition-all bg-zinc-800 text-white shadow-sm border border-white/10">
+                Every day
+              </button>
+              <button type="button" id="freqBtn5x" onclick="setCustomFrequency('5x a week')" class="py-2 rounded-xl text-xs font-bold transition-all text-zinc-400 hover:text-white">
+                5x a week
+              </button>
+              <button type="button" id="freqBtnCustom" onclick="setCustomFrequency('Custom')" class="py-2 rounded-xl text-xs font-bold transition-all text-zinc-400 hover:text-white">
+                Custom
+              </button>
+            </div>
+
+            <!-- Custom Days Selector (if Frequency is "Custom") -->
+            <div id="customDaysContainer" class="p-3 rounded-2xl bg-zinc-900/70 border border-white/10 hidden space-y-2">
+              <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider block">Target Days</span>
+              <div class="grid grid-cols-7 gap-1" id="customDaysRow">
+                <button type="button" onclick="toggleCustomDay('Mon')" data-day="Mon" class="custom-day-btn py-1.5 rounded-lg text-[10px] font-bold bg-zinc-800 text-emerald-400 border border-emerald-500/40">M</button>
+                <button type="button" onclick="toggleCustomDay('Tue')" data-day="Tue" class="custom-day-btn py-1.5 rounded-lg text-[10px] font-bold bg-zinc-800 text-emerald-400 border border-emerald-500/40">T</button>
+                <button type="button" onclick="toggleCustomDay('Wed')" data-day="Wed" class="custom-day-btn py-1.5 rounded-lg text-[10px] font-bold bg-zinc-800 text-emerald-400 border border-emerald-500/40">W</button>
+                <button type="button" onclick="toggleCustomDay('Thu')" data-day="Thu" class="custom-day-btn py-1.5 rounded-lg text-[10px] font-bold bg-zinc-800 text-emerald-400 border border-emerald-500/40">T</button>
+                <button type="button" onclick="toggleCustomDay('Fri')" data-day="Fri" class="custom-day-btn py-1.5 rounded-lg text-[10px] font-bold bg-zinc-800 text-emerald-400 border border-emerald-500/40">F</button>
+                <button type="button" onclick="toggleCustomDay('Sat')" data-day="Sat" class="custom-day-btn py-1.5 rounded-lg text-[10px] font-bold bg-zinc-900 text-zinc-500 border border-white/5">S</button>
+                <button type="button" onclick="toggleCustomDay('Sun')" data-day="Sun" class="custom-day-btn py-1.5 rounded-lg text-[10px] font-bold bg-zinc-900 text-zinc-500 border border-white/5">S</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. ICON / EMOJI & COLOR TAG -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">Icon &amp; Color Tag</label>
+              <span class="text-[10px] text-zinc-400 font-mono">Accent Styling</span>
+            </div>
+
+            <!-- Emoji Picker -->
+            <div class="space-y-1.5">
+              <div class="grid grid-cols-6 gap-2 p-2.5 rounded-2xl bg-zinc-950 border border-white/10" id="emojiPickerGrid">
+                <!-- Populated with curated emojis -->
+              </div>
+              <div class="flex items-center gap-2">
+                <input type="text" id="customEmojiInput" maxlength="4" placeholder="Or type any emoji..." oninput="handleCustomEmojiInput(this.value)" class="w-full px-3 py-1.5 rounded-xl bg-zinc-900 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500 text-center">
+              </div>
+            </div>
+
+            <!-- Color Tag Swatches -->
+            <div class="space-y-1.5">
+              <span class="text-[10px] text-zinc-400 font-semibold block">Color Tag</span>
+              <div class="flex items-center justify-between p-2.5 rounded-2xl bg-zinc-950 border border-white/10" id="colorPickerRow">
+                <!-- Color swatches -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Action Buttons: Cancel and Create Goal -->
+        <div class="pt-3 border-t border-white/[0.08] shrink-0 flex items-center gap-3">
+          <button type="button" onclick="closeCustomGoalModal()" class="py-3 px-4 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs spring-tap border border-white/10">
+            Cancel
+          </button>
+          <button type="button" id="btnCreateCustomGoal" onclick="handleCreateCustomGoal()" class="flex-1 py-3 px-4 rounded-xl text-black font-extrabold text-xs shadow-lg spring-tap transition-all flex items-center justify-center gap-1.5" style="background: linear-gradient(135deg, #10b981, #34d399); box-shadow: 0 4px 18px rgba(16, 185, 129, 0.35);">
+            <span>+</span>
+            <span>Create Goal</span>
           </button>
         </div>
 
@@ -1802,8 +2027,9 @@
       let u2TotalRatio = 0;
 
       activeGoals.forEach(g => {
-        const r1 = Math.min(1, Math.max(0, (g.u1Value || 0) / g.target));
-        const r2 = Math.min(1, Math.max(0, (g.u2Value || 0) / g.target));
+        const target = Math.max(1, g.target || 1);
+        const r1 = Math.min(1, Math.max(0, (g.u1Value || 0) / target));
+        const r2 = Math.min(1, Math.max(0, (g.u2Value || 0) / target));
         u1TotalRatio += r1;
         u2TotalRatio += r2;
         if (r1 >= 1) u1Completed++;
@@ -2027,13 +2253,18 @@
 
       if (activeGoals.length === 0) {
         container.innerHTML = `
-          <div class="p-8 text-center liquid-card rounded-3xl border border-dashed border-white/20">
-            <span class="text-3xl mb-2 block">🎯</span>
+          <div class="p-8 text-center liquid-card rounded-3xl border border-dashed border-white/20 space-y-3">
+            <span class="text-3xl mb-1 block">🎯</span>
             <p class="text-sm font-bold text-zinc-200">No active goals yet</p>
-            <p class="text-xs text-zinc-400 mb-4">Add your daily habits from presets</p>
-            <button onclick="openGoalPickerDrawer()" class="px-4 py-2 rounded-xl text-white font-bold text-xs shadow-sm spring-tap" style="background-color: var(--u1-color);">
-              + Choose Habits
-            </button>
+            <p class="text-xs text-zinc-400">Add your daily habits from presets or build custom habits</p>
+            <div class="flex items-center justify-center gap-2 pt-1">
+              <button onclick="openCustomGoalModal()" class="px-4 py-2 rounded-xl text-black font-bold text-xs shadow-sm spring-tap bg-emerald-400 hover:bg-emerald-300">
+                + Create Custom Goal
+              </button>
+              <button onclick="openGoalPickerDrawer()" class="px-4 py-2 rounded-xl text-white font-bold text-xs shadow-sm spring-tap bg-zinc-800 hover:bg-zinc-700 border border-white/10">
+                + Manage Goals
+              </button>
+            </div>
           </div>
         `;
         return;
@@ -2050,7 +2281,8 @@
       container.innerHTML = activeGoals.map(goal => {
         const u1Val = goal.u1Value || 0;
         const u2Val = goal.u2Value || 0;
-        const target = goal.target;
+        const target = Math.max(1, goal.target || 1);
+        const step = goal.step || (target >= 100 ? 10 : target >= 20 ? 5 : 1);
 
         const u1Pct = Math.min(100, Math.round((u1Val / target) * 100));
         const u2Pct = Math.min(100, Math.round((u2Val / target) * 100));
@@ -2088,18 +2320,20 @@
         } else {
           actionControlsHtml = `
             <div class="flex items-center gap-1">
-              <button onclick="handleCheckinStep(event, '${goal.id}', -${goal.step})" class="w-7 h-7 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700 font-bold text-xs flex items-center justify-center spring-tap border border-white/10">
+              <button onclick="handleCheckinStep(event, '${goal.id}', -${step})" class="w-7 h-7 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700 font-bold text-xs flex items-center justify-center spring-tap border border-white/10">
                 -
               </button>
-              <button onclick="handleCheckinStep(event, '${goal.id}', ${goal.step})" class="px-3 py-1.5 rounded-xl font-bold text-xs spring-tap flex items-center gap-1 ${
+              <button onclick="handleCheckinStep(event, '${goal.id}', ${step})" class="px-3 py-1.5 rounded-xl font-bold text-xs spring-tap flex items-center gap-1 ${
                 myDone ? 'text-white shadow-md' : 'bg-white text-zinc-900 hover:bg-zinc-100'
               }" style="${myDone ? `background-color: ${activeColor}; box-shadow: 0 4px 14px ${hexToRgba(activeColor, 0.45)};` : ''}">
-                <span class="font-mono">+${goal.step.toLocaleString()}</span>
+                <span class="font-mono">+${step.toLocaleString()}</span>
                 <span class="text-[10px] opacity-80">${goal.unit}</span>
               </button>
             </div>
           `;
         }
+
+        const goalColor = goal.color || (goal.isCustom ? '#10b981' : null);
 
         return `
           <div class="liquid-card rounded-2xl p-4 space-y-3 transition-all">
@@ -2107,14 +2341,18 @@
             <!-- Card Header: Icon, Name, Target, Status Badge -->
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2.5">
-                <span class="text-2xl">${goal.icon}</span>
+                <div class="relative flex items-center justify-center">
+                  <span class="text-2xl">${goal.icon}</span>
+                  ${goalColor ? `<span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full border border-black shadow-sm" style="background-color: ${goalColor};"></span>` : ''}
+                </div>
                 <div>
-                  <div class="flex items-center gap-2">
-                    <h4 class="font-extrabold text-sm text-white">${goal.name}</h4>
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <h4 class="font-extrabold text-sm text-white">${escapeHtml(goal.name)}</h4>
+                    ${goal.isCustom ? `<span class="text-[9px] px-1.5 py-0.2 rounded-full font-mono font-medium" style="background-color: ${hexToRgba(goalColor || '#10b981', 0.15)}; color: ${goalColor || '#10b981'}; border: 1px solid ${hexToRgba(goalColor || '#10b981', 0.3)};">${escapeHtml(goal.frequency || 'Every day')}</span>` : ''}
                     ${badgeHtml}
                   </div>
                   <span class="text-[11px] text-zinc-400 font-mono">
-                    Target: ${goal.target.toLocaleString()} ${goal.unit}
+                    ${goal.type === 'boolean' ? 'Daily completion target: 1 check' : `Target: ${target.toLocaleString()} ${goal.unit}`}
                   </span>
                 </div>
               </div>
@@ -2156,7 +2394,7 @@
                       <span class="truncate max-w-[90px]">${escapeHtml(state.users.u1.name)}</span>
                     </span>
                     <span class="font-mono text-[10px] ${u1Done ? 'font-bold' : 'text-zinc-400'}" style="${u1Done ? `color: ${u1Color};` : ''}">
-                      ${u1Val.toLocaleString()} / ${goal.target.toLocaleString()} ${goal.unit} (${u1Pct}%)
+                      ${u1Val.toLocaleString()} / ${target.toLocaleString()} ${goal.unit} (${u1Pct}%)
                     </span>
                   </div>
                   <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
@@ -2172,7 +2410,7 @@
                       <span class="truncate max-w-[90px]">${escapeHtml(state.users.u2.name)}</span>
                     </span>
                     <span class="font-mono text-[10px] ${u2Done ? 'font-bold' : 'text-zinc-400'}" style="${u2Done ? `color: ${u2Color};` : ''}">
-                      ${u2Val.toLocaleString()} / ${goal.target.toLocaleString()} ${goal.unit} (${u2Pct}%)
+                      ${u2Val.toLocaleString()} / ${target.toLocaleString()} ${goal.unit} (${u2Pct}%)
                     </span>
                   </div>
                   <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
@@ -2185,7 +2423,7 @@
             <!-- Card Footer: Nudge / Reaction -->
             <div class="flex items-center justify-between pt-1 border-t border-white/[0.08] text-[11px] text-zinc-400">
               <span class="text-[10px]">Tap to check-in for <strong class="text-zinc-200">${escapeHtml(activeUser.name)}</strong></span>
-              <button onclick="nudgeOnHabit('${goal.name}')" class="text-xs font-semibold hover:underline flex items-center gap-1 spring-subtle" style="color: ${activeColor};">
+              <button onclick="nudgeOnHabit('${escapeHtml(goal.name)}')" class="text-xs font-semibold hover:underline flex items-center gap-1 spring-subtle" style="color: ${activeColor};">
                 <span>⚡ Nudge ${escapeHtml(partnerUser.name)}</span>
               </button>
             </div>
@@ -2282,11 +2520,12 @@
 
       const partnerName = state.users.u2.name;
       const randomGoal = activeGoals[Math.floor(Math.random() * activeGoals.length)];
+      const step = randomGoal.step || (randomGoal.target >= 100 ? 10 : randomGoal.target >= 20 ? 5 : 1);
       
       if (randomGoal.type === 'boolean') {
         randomGoal.u2Value = 1;
       } else {
-        randomGoal.u2Value = Math.min(randomGoal.target, (randomGoal.u2Value || 0) + randomGoal.step);
+        randomGoal.u2Value = Math.min(randomGoal.target, (randomGoal.u2Value || 0) + step);
       }
 
       saveState();
@@ -2294,9 +2533,13 @@
       triggerConfetti();
 
       showToast(`⚡ ${partnerName} just checked in on ${randomGoal.name}!`);
-      logFeed(`${partnerName} updated ${randomGoal.name} (+${randomGoal.step} ${randomGoal.unit})`, randomGoal.icon);
+      const logText = randomGoal.type === 'boolean'
+        ? `${partnerName} completed ${randomGoal.name}! ✨`
+        : `${partnerName} updated ${randomGoal.name} (+${step} ${randomGoal.unit})`;
+      logFeed(logText, randomGoal.icon);
 
       renderHabitCards();
+      renderSoloView();
       const scores = getScores();
       updateGaugeWithScores(scores);
     }
@@ -2465,19 +2708,24 @@
 
       const activeGoals = state.goals.filter(g => g.enabled);
       checklistContainer.innerHTML = activeGoals.map(goal => {
-        const val = isU1 ? goal.u1Value : goal.u2Value;
-        const isDone = val >= goal.target;
+        const val = isU1 ? (goal.u1Value || 0) : (goal.u2Value || 0);
+        const target = Math.max(1, goal.target || 1);
+        const isDone = val >= target;
+        const step = goal.step || (target >= 100 ? 10 : target >= 20 ? 5 : 1);
+        const subtext = goal.type === 'boolean'
+          ? (isDone ? 'Completed ✓' : 'Daily check-in')
+          : `${val.toLocaleString()} / ${target.toLocaleString()} ${goal.unit}`;
 
         return `
           <div class="liquid-card flex items-center justify-between p-3 rounded-2xl">
             <div class="flex items-center gap-3">
               <span class="text-xl">${goal.icon}</span>
               <div>
-                <h5 class="text-xs font-bold text-white">${goal.name}</h5>
-                <span class="text-[11px] text-zinc-400 font-mono">${val.toLocaleString()} / ${goal.target.toLocaleString()} ${goal.unit}</span>
+                <h5 class="text-xs font-bold text-white">${escapeHtml(goal.name)}</h5>
+                <span class="text-[11px] text-zinc-400 font-mono">${subtext}</span>
               </div>
             </div>
-            <button onclick="handleSoloCheckin(event, '${goal.id}', ${goal.type === 'boolean' ? 0 : goal.step}, '${goal.type}')" 
+            <button onclick="handleSoloCheckin(event, '${goal.id}', ${goal.type === 'boolean' ? 0 : step}, '${goal.type}')" 
               class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm spring-tap ${
                 isDone ? 'text-white shadow-md' : 'bg-zinc-800 text-zinc-400 border border-white/10'
               }" style="${isDone ? `background-color: ${activeUser.color};` : ''}">
@@ -2611,25 +2859,123 @@
       if (modal) modal.classList.add('hidden');
     }
 
+    /* =========================================================================
+       16. GOAL MANAGER & TETHER CUSTOM GOAL CREATION ENGINE
+       ========================================================================= */
+    const CURATED_EMOJIS = ['🎯', '📝', '💻', '💧', '🏃', '🧘', '⚡', '✍️', '🏋️', '🧠', '🍎', '🔥', '💊', '📚', '🚴', '🥗', '🎨', '🎵'];
+
+    let customGoalState = {
+      name: '',
+      type: 'counter',
+      target: 50,
+      unit: 'MCQs',
+      step: 10,
+      frequency: 'Every day',
+      customDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+      emoji: '🎯',
+      color: '#10b981'
+    };
+
     function openGoalPickerDrawer() {
       const modal = document.getElementById('goalPickerModal');
       if (modal) modal.classList.remove('hidden');
       renderPresetGoalPicker();
+      playTactileHaptic('pop');
     }
 
     function closeGoalPickerDrawer() {
       const modal = document.getElementById('goalPickerModal');
       if (modal) modal.classList.add('hidden');
       renderHabitCards();
+      renderSoloView();
       const scores = getScores();
       updateGaugeWithScores(scores);
+      drawGauge();
+      playTactileHaptic('pop');
     }
 
     function renderPresetGoalPicker() {
       const container = document.getElementById('presetGoalList');
       if (!container) return;
 
-      container.innerHTML = defaultPresetLibrary.map(preset => {
+      const customGoals = state.goals.filter(g => g.isCustom);
+      const isU1Active = state.activeUser === 'u1';
+      const activeColor = isU1Active ? state.users.u1.color : state.users.u2.color;
+
+      let html = '';
+
+      // --- SECTION 1: CUSTOM HABITS ---
+      html += `
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+              <span>Your Custom Habits</span>
+              <span class="px-1.5 py-0.2 rounded-full bg-zinc-800 text-[10px] text-zinc-300 font-mono">${customGoals.length}</span>
+            </span>
+            <button onclick="openCustomGoalModal()" class="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 spring-subtle">
+              + New Custom
+            </button>
+          </div>
+      `;
+
+      if (customGoals.length === 0) {
+        html += `
+          <div class="p-3.5 rounded-2xl bg-zinc-900/60 border border-dashed border-white/10 text-center space-y-1">
+            <p class="text-xs text-zinc-300 font-medium">No custom habits created yet</p>
+            <p class="text-[10px] text-zinc-500">Tap "+ Create Custom Goal" above to create habits like MCQ Practice or Deep Work</p>
+          </div>
+        `;
+      } else {
+        html += customGoals.map(goal => {
+          const isActive = goal.enabled;
+          const goalColor = goal.color || '#10b981';
+          return `
+            <div class="flex items-center justify-between p-3 rounded-2xl border transition-all ${
+              isActive ? 'bg-zinc-800/90 border-emerald-500/80 shadow-sm' : 'bg-zinc-900 border-white/10'
+            }">
+              <div class="flex items-center gap-3 min-w-0 flex-1 pr-2">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center text-xl shrink-0 shadow-sm" style="background-color: ${hexToRgba(goalColor, 0.15)}; border: 1px solid ${hexToRgba(goalColor, 0.35)};">
+                  <span>${goal.icon}</span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5">
+                    <h5 class="text-xs font-bold text-white truncate">${escapeHtml(goal.name)}</h5>
+                    <span class="text-[9px] px-1.5 py-0.2 rounded-full font-mono shrink-0 font-medium" style="background-color: ${hexToRgba(goalColor, 0.18)}; color: ${goalColor}; border: 1px solid ${hexToRgba(goalColor, 0.3)};">${escapeHtml(goal.frequency || 'Daily')}</span>
+                  </div>
+                  <span class="text-[10px] text-zinc-400 font-mono block truncate">
+                    ${goal.type === 'boolean' ? 'Daily check-off' : `Target: ${goal.target.toLocaleString()} ${goal.unit}`}
+                  </span>
+                </div>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button onclick="toggleCustomGoal('${goal.id}')" class="px-3 py-1.5 rounded-xl font-bold text-xs spring-tap ${
+                  isActive 
+                    ? 'text-white shadow-sm' 
+                    : 'bg-zinc-800 text-zinc-300 border border-white/10 hover:border-white/20'
+                }" style="${isActive ? `background-color: var(--u1-color);` : ''}">
+                  ${isActive ? 'Active ✓' : '+ Add'}
+                </button>
+                <button onclick="deleteCustomGoal('${goal.id}')" title="Delete custom habit" class="w-8 h-8 rounded-xl bg-zinc-800/80 hover:bg-rose-500/20 text-zinc-400 hover:text-rose-400 border border-white/10 hover:border-rose-500/30 flex items-center justify-center transition-colors spring-tap">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      html += `</div>`;
+
+      // --- SECTION 2: PRESET HABIT LIBRARY ---
+      html += `
+        <div class="space-y-2 pt-2 border-t border-white/[0.08]">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+            <span>Preset Habits</span>
+            <span class="px-1.5 py-0.2 rounded-full bg-zinc-800 text-[10px] text-zinc-300 font-mono">${defaultPresetLibrary.length}</span>
+          </span>
+      `;
+
+      html += defaultPresetLibrary.map(preset => {
         const existing = state.goals.find(g => g.id === preset.id);
         const isActive = existing ? existing.enabled : false;
 
@@ -2654,6 +3000,19 @@
           </div>
         `;
       }).join('');
+
+      html += `</div>`;
+
+      // Secondary "+ Create Custom Goal" link at bottom
+      html += `
+        <div class="pt-2 text-center">
+          <button onclick="openCustomGoalModal()" class="text-xs font-semibold text-zinc-400 hover:text-emerald-400 spring-subtle inline-flex items-center gap-1">
+            <span>+ Create another custom habit</span>
+          </button>
+        </div>
+      `;
+
+      container.innerHTML = html;
     }
 
     function togglePresetGoal(presetId) {
@@ -2682,7 +3041,438 @@
       saveState();
       playTactileHaptic('pop');
       renderPresetGoalPicker();
+      renderHabitCards();
+      renderSoloView();
+      const scores = getScores();
+      updateGaugeWithScores(scores);
+      drawGauge();
       showToast('Habit list updated');
+    }
+
+    function toggleCustomGoal(goalId) {
+      let goal = state.goals.find(g => g.id === goalId);
+      if (!goal) return;
+      goal.enabled = !goal.enabled;
+      saveState();
+      playTactileHaptic('pop');
+      renderPresetGoalPicker();
+      renderHabitCards();
+      renderSoloView();
+      const scores = getScores();
+      updateGaugeWithScores(scores);
+      drawGauge();
+      showToast(goal.enabled ? `Activated "${goal.name}"` : `Paused "${goal.name}"`);
+    }
+
+    function deleteCustomGoal(goalId) {
+      const goal = state.goals.find(g => g.id === goalId);
+      if (!goal) return;
+
+      if (confirm(`Delete custom habit "${goal.name}"? This will remove it from your pod dashboard.`)) {
+        state.goals = state.goals.filter(g => g.id !== goalId);
+        saveState();
+        playTactileHaptic('pop');
+        renderPresetGoalPicker();
+        renderHabitCards();
+        renderSoloView();
+        const scores = getScores();
+        updateGaugeWithScores(scores);
+        drawGauge();
+        showToast(`Deleted custom goal "${goal.name}"`);
+      }
+    }
+
+    /* =========================================================================
+       TETHER CUSTOM GOAL CREATION LOGIC
+       ========================================================================= */
+    function adjustHexBrightness(hex, percent) {
+      if (!hex) return '#34d399';
+      let num = parseInt(hex.replace('#', ''), 16);
+      if (isNaN(num)) return hex;
+      let r = (num >> 16) + percent;
+      let g = ((num >> 8) & 0x00FF) + percent;
+      let b = (num & 0x0000FF) + percent;
+      r = Math.min(255, Math.max(0, r));
+      g = Math.min(255, Math.max(0, g));
+      b = Math.min(255, Math.max(0, b));
+      return '#' + (g | (b << 8) | (r << 16)).toString(16).padStart(6, '0');
+    }
+
+    function openCustomGoalModal() {
+      const modal = document.getElementById('customGoalModal');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+
+      // Initialize default custom goal state
+      customGoalState = {
+        name: '',
+        type: 'counter',
+        target: 50,
+        unit: 'MCQs',
+        step: 10,
+        frequency: 'Every day',
+        customDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+        emoji: '🎯',
+        color: '#10b981'
+      };
+
+      const nameInput = document.getElementById('customGoalName');
+      if (nameInput) nameInput.value = '';
+
+      const targetInput = document.getElementById('customGoalTarget');
+      if (targetInput) targetInput.value = 50;
+
+      const unitInput = document.getElementById('customGoalUnit');
+      if (unitInput) unitInput.value = 'MCQs';
+
+      const emojiInput = document.getElementById('customEmojiInput');
+      if (emojiInput) emojiInput.value = '🎯';
+
+      renderEmojiPicker();
+      renderColorPicker();
+      setCustomTrackingType('counter');
+      setCustomFrequency('Every day');
+      selectCustomColor('#10b981');
+      selectCustomEmoji('🎯');
+      updateCustomGoalPreview();
+
+      setTimeout(() => {
+        if (nameInput) nameInput.focus();
+      }, 150);
+
+      playTactileHaptic('pop');
+    }
+
+    function closeCustomGoalModal() {
+      const modal = document.getElementById('customGoalModal');
+      if (modal) modal.classList.add('hidden');
+      playTactileHaptic('pop');
+    }
+
+    function setCustomTrackingType(type) {
+      customGoalState.type = type;
+      const btnBool = document.getElementById('trackingTypeBtnBoolean');
+      const btnCount = document.getElementById('trackingTypeBtnCounter');
+      const countSection = document.getElementById('countItTargetSection');
+      const yesNoSection = document.getElementById('yesNoTargetSection');
+      const summary = document.getElementById('trackingTypeSummary');
+      const hint = document.getElementById('trackingTypeHint');
+
+      if (type === 'boolean') {
+        if (btnBool) {
+          btnBool.className = 'py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-zinc-800 text-white shadow-sm border border-white/10';
+        }
+        if (btnCount) {
+          btnCount.className = 'py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-zinc-400 hover:text-white';
+        }
+        if (countSection) countSection.classList.add('hidden');
+        if (yesNoSection) {
+          yesNoSection.classList.remove('hidden');
+          yesNoSection.classList.add('flex');
+        }
+        if (summary) summary.textContent = 'Yes / No Check';
+        if (hint) hint.textContent = 'One-tap daily check-in (e.g. workout completed, vitamins taken).';
+      } else {
+        if (btnBool) {
+          btnBool.className = 'py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-zinc-400 hover:text-white';
+        }
+        if (btnCount) {
+          btnCount.className = 'py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all bg-zinc-800 text-white shadow-sm border border-white/10';
+        }
+        if (countSection) countSection.classList.remove('hidden');
+        if (yesNoSection) {
+          yesNoSection.classList.add('hidden');
+          yesNoSection.classList.remove('flex');
+        }
+        if (summary) summary.textContent = 'Numeric Target';
+        if (hint) hint.textContent = 'Track numeric progress towards a target number (e.g. 50 MCQs, 8 glasses).';
+      }
+      playTactileHaptic('pop');
+      updateCustomGoalPreview();
+    }
+
+    function setCustomFrequency(freq) {
+      customGoalState.frequency = freq;
+      const btnEveryday = document.getElementById('freqBtnEveryday');
+      const btn5x = document.getElementById('freqBtn5x');
+      const btnCustom = document.getElementById('freqBtnCustom');
+      const customDaysContainer = document.getElementById('customDaysContainer');
+      const summary = document.getElementById('frequencySummary');
+
+      [btnEveryday, btn5x, btnCustom].forEach(btn => {
+        if (btn) btn.className = 'py-2 rounded-xl text-xs font-bold transition-all text-zinc-400 hover:text-white';
+      });
+
+      if (freq === 'Every day' && btnEveryday) {
+        btnEveryday.className = 'py-2 rounded-xl text-xs font-bold transition-all bg-zinc-800 text-white shadow-sm border border-white/10';
+        if (customDaysContainer) customDaysContainer.classList.add('hidden');
+        if (summary) summary.textContent = 'Every day (7d/wk)';
+      } else if (freq === '5x a week' && btn5x) {
+        btn5x.className = 'py-2 rounded-xl text-xs font-bold transition-all bg-zinc-800 text-white shadow-sm border border-white/10';
+        if (customDaysContainer) customDaysContainer.classList.add('hidden');
+        if (summary) summary.textContent = '5 days a week';
+      } else if (freq === 'Custom' && btnCustom) {
+        btnCustom.className = 'py-2 rounded-xl text-xs font-bold transition-all bg-zinc-800 text-white shadow-sm border border-white/10';
+        if (customDaysContainer) customDaysContainer.classList.remove('hidden');
+        if (summary) summary.textContent = `${customGoalState.customDays.length} days selected`;
+      }
+
+      playTactileHaptic('pop');
+      updateCustomGoalPreview();
+    }
+
+    function toggleCustomDay(day) {
+      const idx = customGoalState.customDays.indexOf(day);
+      if (idx >= 0) {
+        if (customGoalState.customDays.length > 1) {
+          customGoalState.customDays.splice(idx, 1);
+        } else {
+          showToast('Select at least 1 day');
+          return;
+        }
+      } else {
+        customGoalState.customDays.push(day);
+      }
+
+      const btn = document.querySelector(`.custom-day-btn[data-day="${day}"]`);
+      if (btn) {
+        const isActive = customGoalState.customDays.includes(day);
+        if (isActive) {
+          btn.className = 'custom-day-btn py-1.5 rounded-lg text-[10px] font-bold bg-zinc-800 text-emerald-400 border border-emerald-500/40';
+        } else {
+          btn.className = 'custom-day-btn py-1.5 rounded-lg text-[10px] font-bold bg-zinc-900 text-zinc-500 border border-white/5';
+        }
+      }
+
+      const summary = document.getElementById('frequencySummary');
+      if (summary) summary.textContent = `${customGoalState.customDays.length} days (${customGoalState.customDays.join(', ')})`;
+
+      playTactileHaptic('pop');
+      updateCustomGoalPreview();
+    }
+
+    function selectCustomEmoji(emoji) {
+      customGoalState.emoji = emoji;
+      const input = document.getElementById('customEmojiInput');
+      if (input) input.value = emoji;
+      renderEmojiPicker();
+      playTactileHaptic('pop');
+      updateCustomGoalPreview();
+    }
+
+    function handleCustomEmojiInput(val) {
+      if (!val) return;
+      const emoji = val.trim();
+      if (emoji) {
+        customGoalState.emoji = emoji;
+        renderEmojiPicker();
+        updateCustomGoalPreview();
+      }
+    }
+
+    function selectCustomColor(colorHex) {
+      customGoalState.color = colorHex;
+      renderColorPicker();
+      renderEmojiPicker();
+
+      const btnCreate = document.getElementById('btnCreateCustomGoal');
+      if (btnCreate) {
+        btnCreate.style.background = `linear-gradient(135deg, ${colorHex}, ${adjustHexBrightness(colorHex, 20)})`;
+        btnCreate.style.boxShadow = `0 4px 18px ${hexToRgba(colorHex, 0.4)}`;
+      }
+
+      playTactileHaptic('pop');
+      updateCustomGoalPreview();
+    }
+
+    function applyHabitPreset(name, emoji, type, target, unit, step, freq, color) {
+      const nameInput = document.getElementById('customGoalName');
+      if (nameInput) nameInput.value = name;
+
+      const targetInput = document.getElementById('customGoalTarget');
+      if (targetInput) targetInput.value = target;
+
+      const unitInput = document.getElementById('customGoalUnit');
+      if (unitInput) unitInput.value = unit;
+
+      customGoalState.step = step;
+      customGoalState.emoji = emoji;
+      customGoalState.color = color;
+      
+      const emojiInput = document.getElementById('customEmojiInput');
+      if (emojiInput) emojiInput.value = emoji;
+
+      setCustomTrackingType(type);
+      setCustomFrequency(freq);
+      selectCustomColor(color);
+      selectCustomEmoji(emoji);
+      updateCustomGoalPreview();
+      playTactileHaptic('pop');
+    }
+
+    function setCustomUnit(unit, defaultTarget, defaultStep) {
+      const unitInput = document.getElementById('customGoalUnit');
+      if (unitInput) unitInput.value = unit;
+
+      const targetInput = document.getElementById('customGoalTarget');
+      if (targetInput && (!targetInput.value || targetInput.value === '50' || targetInput.value === '1')) {
+        targetInput.value = defaultTarget;
+      }
+      customGoalState.step = defaultStep;
+
+      playTactileHaptic('tap');
+      updateCustomGoalPreview();
+    }
+
+    function adjustCustomTarget(delta) {
+      const targetInput = document.getElementById('customGoalTarget');
+      if (!targetInput) return;
+      let val = parseInt(targetInput.value, 10) || 50;
+      val = Math.max(1, val + delta);
+      targetInput.value = val;
+      playTactileHaptic('tap');
+      updateCustomGoalPreview();
+    }
+
+    function updateCustomGoalPreview() {
+      const nameInput = document.getElementById('customGoalName');
+      const targetInput = document.getElementById('customGoalTarget');
+      const unitInput = document.getElementById('customGoalUnit');
+
+      const name = nameInput && nameInput.value.trim() ? nameInput.value.trim() : 'MCQ Practice';
+      const targetVal = targetInput && targetInput.value ? Math.max(1, Number(targetInput.value)) : 50;
+      const unitVal = unitInput && unitInput.value.trim() ? unitInput.value.trim() : 'MCQs';
+
+      const previewName = document.getElementById('previewGoalName');
+      if (previewName) previewName.textContent = name;
+
+      const previewIcon = document.getElementById('previewGoalIcon');
+      if (previewIcon) previewIcon.textContent = customGoalState.emoji;
+
+      const previewIconBg = document.getElementById('previewGoalIconBg');
+      if (previewIconBg) {
+        previewIconBg.style.backgroundColor = hexToRgba(customGoalState.color, 0.15);
+        previewIconBg.style.borderColor = hexToRgba(customGoalState.color, 0.35);
+      }
+
+      const previewDot = document.getElementById('previewColorDot');
+      if (previewDot) {
+        previewDot.style.backgroundColor = customGoalState.color;
+      }
+
+      const typeBadge = document.getElementById('previewGoalTypeBadge');
+      if (typeBadge) {
+        typeBadge.textContent = customGoalState.type === 'boolean' ? 'Yes / No' : 'Count It';
+        typeBadge.style.color = customGoalState.color;
+        typeBadge.style.backgroundColor = hexToRgba(customGoalState.color, 0.12);
+      }
+
+      const targetText = document.getElementById('previewGoalTargetText');
+      if (targetText) {
+        if (customGoalState.type === 'boolean') {
+          targetText.textContent = `Daily check-in • ${customGoalState.frequency}`;
+        } else {
+          targetText.textContent = `Target: ${targetVal.toLocaleString()} ${unitVal} • ${customGoalState.frequency}`;
+        }
+      }
+    }
+
+    function renderEmojiPicker() {
+      const container = document.getElementById('emojiPickerGrid');
+      if (!container) return;
+      container.innerHTML = CURATED_EMOJIS.map(emoji => {
+        const isSelected = customGoalState.emoji === emoji;
+        return `
+          <button type="button" onclick="selectCustomEmoji('${emoji}')" class="w-10 h-10 rounded-xl flex items-center justify-center text-xl transition-all spring-subtle ${
+            isSelected ? 'bg-zinc-800 shadow-md scale-110' : 'bg-zinc-900/60 hover:bg-zinc-800 text-zinc-300'
+          }" style="${isSelected ? `border: 2px solid ${customGoalState.color}; box-shadow: 0 0 10px ${hexToRgba(customGoalState.color, 0.4)};` : 'border: 1px solid rgba(255,255,255,0.06);'}">
+            <span>${emoji}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderColorPicker() {
+      const container = document.getElementById('colorPickerRow');
+      if (!container) return;
+      container.innerHTML = IOS_PALETTES.map(p => {
+        const isSelected = customGoalState.color === p.hex;
+        return `
+          <button type="button" onclick="selectCustomColor('${p.hex}')" class="w-7 h-7 rounded-full transition-all spring-subtle flex items-center justify-center relative ${
+            isSelected ? 'scale-125' : 'hover:scale-110 opacity-70 hover:opacity-100'
+          }" style="background-color: ${p.hex}; ${isSelected ? `box-shadow: 0 0 12px ${p.glow}; border: 2px solid #ffffff;` : 'border: 1px solid rgba(255,255,255,0.2);'}">
+            ${isSelected ? '<span class="w-1.5 h-1.5 rounded-full bg-white"></span>' : ''}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function handleCreateCustomGoal() {
+      const nameInput = document.getElementById('customGoalName');
+      const name = nameInput ? nameInput.value.trim() : '';
+
+      if (!name) {
+        if (nameInput) {
+          nameInput.classList.add('animate-shake');
+          nameInput.focus();
+          setTimeout(() => nameInput.classList.remove('animate-shake'), 500);
+        }
+        playTactileHaptic('switch');
+        showToast('Please enter a habit name');
+        return;
+      }
+
+      const isBoolean = customGoalState.type === 'boolean';
+      let target = 1;
+      let unit = 'check';
+      let step = 1;
+
+      if (!isBoolean) {
+        const targetInput = document.getElementById('customGoalTarget');
+        target = targetInput && Number(targetInput.value) > 0 ? Number(targetInput.value) : 50;
+        const unitInput = document.getElementById('customGoalUnit');
+        unit = unitInput && unitInput.value.trim() ? unitInput.value.trim() : 'units';
+        step = customGoalState.step || (target >= 100 ? 10 : target >= 20 ? 5 : 1);
+      }
+
+      const newGoal = {
+        id: 'custom_' + Date.now(),
+        name: name,
+        icon: customGoalState.emoji || '🎯',
+        category: 'Custom',
+        color: customGoalState.color || '#10b981',
+        type: isBoolean ? 'boolean' : 'counter',
+        target: target,
+        unit: unit,
+        step: step,
+        frequency: customGoalState.frequency || 'Every day',
+        customDays: customGoalState.frequency === 'Custom' ? [...customGoalState.customDays] : null,
+        enabled: true,
+        isCustom: true,
+        u1Value: 0,
+        u2Value: 0
+      };
+
+      state.goals.push(newGoal);
+      saveState();
+
+      closeCustomGoalModal();
+
+      playTactileHaptic('double-bounce');
+      triggerConfetti();
+
+      const isU1 = state.activeUser === 'u1';
+      const creatorName = isU1 ? state.users.u1.name : state.users.u2.name;
+      showToast(`🎯 Custom habit "${newGoal.name}" created!`);
+      logFeed(`${creatorName} added new custom goal: ${newGoal.icon} ${newGoal.name}`, newGoal.icon);
+
+      // Immediately update dashboard, goal picker, solo view, and recalculate gauge
+      renderPresetGoalPicker();
+      renderHabitCards();
+      renderSoloView();
+      const scores = getScores();
+      updateGaugeWithScores(scores);
+      drawGauge();
     }
 
     /* =========================================================================
