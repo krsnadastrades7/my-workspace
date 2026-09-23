@@ -1,732 +1,2718 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Dharmanagar Iron Gym - Management System</title>
-  <meta name="description" content="Full-stack gym management web application for Dharmanagar Iron Gym. Admin panel & member workout dashboards.">
-  <link rel="stylesheet" href="/static/css/style.css">
+  <title id="documentTitle">FOCUS // 2-Person Accountability</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Space Grotesk -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"Space Grotesk"', 'ui-monospace', 'monospace'],
+          },
+          colors: {
+            focus: {
+              pitch: '#000000',
+              amoled: '#05070a',
+              darkSlate: '#0b0f19',
+              surface: 'rgba(14, 18, 27, 0.82)',
+              surfaceBorder: 'rgba(255, 255, 255, 0.12)',
+              glassHighlight: 'rgba(255, 255, 255, 0.08)',
+            }
+          },
+          boxShadow: {
+            'phone-dark': '0 32px 85px -12px rgba(0, 0, 0, 0.98)',
+            'glass-glow': '0 16px 40px -4px rgba(0, 0, 0, 0.85), inset 0 1px 1px 0 rgba(255, 255, 255, 0.14)',
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* =========================================================================
+       FOCUS APPLE "LIQUID" MOTION, AMOLED DARK & TACTILE ANIMATION STYLES
+       ========================================================================= */
+    :root {
+      --u1-color: #10b981;
+      --u2-color: #ff6b4a;
+      --u1-glow: rgba(16, 185, 129, 0.45);
+      --u2-glow: rgba(255, 107, 74, 0.45);
+      --apple-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --apple-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 9999px;
+    }
+    
+    /* Apple Spring Motion classes */
+    .spring-tap {
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+      user-select: none;
+    }
+    .spring-tap:active {
+      transform: scale(0.93);
+    }
+
+    .spring-subtle {
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+    }
+    .spring-subtle:active {
+      transform: scale(0.96);
+    }
+
+    .spring-progress {
+      transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .spring-ring {
+      transition: stroke-dashoffset 0.85s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Minimalist AMOLED Liquid Glassmorphism Cards */
+    .liquid-card {
+      background: rgba(11, 15, 24, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 16px 40px -4px rgba(0, 0, 0, 0.85), inset 0 1px 1px 0 rgba(255, 255, 255, 0.12);
+      position: relative;
+      overflow: hidden;
+    }
+    .light .liquid-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.06), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    /* Floating Navigation Pill Bar */
+    .liquid-nav-pill {
+      background: rgba(9, 12, 19, 0.90);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.9), inset 0 1px 2px 0 rgba(255, 255, 255, 0.15);
+    }
+    .light .liquid-nav-pill {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.15), inset 0 1px 2px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    /* Fluid Wave / Ripple Expansion on Check-ins */
+    @keyframes liquidWaveExpand {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.8;
+      }
+      45% {
+        opacity: 0.45;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(4);
+        opacity: 0;
+      }
+    }
+    .liquid-wave-ripple {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: liquidWaveExpand 0.75s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+      z-index: 10;
+    }
+
+    /* Modal Animation */
+    .modal-enter-spring {
+      animation: springSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    @keyframes springSlideUp {
+      0% {
+        transform: translateY(60px) scale(0.95);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes shakeSoft {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-shake {
+      animation: shakeSoft 0.4s ease-in-out;
+    }
+
+    /* Subtle pulse */
+    @keyframes subtlePulse {
+      0%, 100% { transform: scale(1); opacity: 0.95; }
+      50% { transform: scale(1.08); opacity: 0.6; }
+    }
+    .ambient-pulse {
+      animation: subtlePulse 3s infinite ease-in-out;
+    }
+
+    body {
+      overscroll-behavior-y: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
 </head>
-<body>
-  <!-- Toast Notification Container -->
-  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+<body class="bg-[#000000] text-slate-100 min-h-screen flex items-center justify-center font-sans antialiased p-0 md:p-6 transition-colors duration-300 select-none">
 
-  <!-- Top Navigation Header -->
-  <header class="app-header">
-    <div class="header-inner">
-      <div class="brand">
-        <div class="brand-icon">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-            <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43 1.71-1.57z"/>
+  <!-- Desktop Backdrop Ambient Lighting -->
+  <div class="fixed inset-0 pointer-events-none hidden md:block overflow-hidden z-0">
+    <div id="desktopAmbient1" class="absolute -top-32 -left-32 w-96 h-96 rounded-full blur-3xl opacity-15 transition-all duration-700" style="background-color: var(--u1-color);"></div>
+    <div id="desktopAmbient2" class="absolute top-1/2 -right-32 w-96 h-96 rounded-full blur-3xl opacity-15 transition-all duration-700" style="background-color: var(--u2-color);"></div>
+    <div class="absolute bottom-10 left-1/4 w-80 h-80 bg-emerald-500/5 rounded-full blur-3xl"></div>
+    
+    <!-- Desktop Minimalist "FOCUS" Branding -->
+    <div class="absolute top-8 left-8 flex items-center gap-4">
+      <div>
+        <h1 id="desktopAppTitle" class="font-black tracking-[0.3em] text-white text-xl uppercase">FOCUS</h1>
+        <p class="text-[11px] text-zinc-400 font-medium tracking-wider uppercase mt-0.5">1-to-1 Duo Accountability</p>
+      </div>
+    </div>
+
+    <!-- Desktop Switcher Helper Info -->
+    <div id="desktopDuoDesc" class="absolute bottom-8 left-8 text-xs text-zinc-400 max-w-xs leading-relaxed p-3.5 rounded-2xl bg-zinc-950/80 backdrop-blur-md border border-white/10 shadow-xl">
+      Switch between <span id="desktopUser1Label" class="font-bold" style="color: var(--u1-color);">You</span> &amp; <span id="desktopUser2Label" class="font-bold" style="color: var(--u2-color);">Partner</span> to simulate real-time peer check-ins &amp; dual-arc sync.
+    </div>
+  </div>
+
+  <!-- Mobile Frame Container (iPhone 16 Pro Style) -->
+  <div id="appContainer" class="w-full md:max-w-[430px] h-[100dvh] md:h-[900px] md:max-h-[95vh] bg-[#000000] md:rounded-[48px] shadow-2xl md:shadow-phone-dark md:border-[7px] border-[#1e2330] flex flex-col relative overflow-hidden z-10 transition-colors duration-300">
+
+    <!-- Top Hardware Island & Status Bar -->
+    <div class="pt-2 px-6 pb-1 flex justify-between items-center text-xs font-semibold text-zinc-400 shrink-0 z-30 bg-[#000000]">
+      <!-- Live Time Indicator -->
+      <span id="liveClock" class="font-mono text-[13px] tracking-tight text-white font-medium">09:41</span>
+      
+      <!-- Dynamic Island Mockup -->
+      <div class="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-zinc-900 border border-white/10 text-white rounded-full text-[10px] shadow-sm cursor-pointer" onclick="openPodModal()">
+        <span id="islandDot" class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--u1-color);"></span>
+        <span id="islandStatusText" class="tracking-widest text-[9px] font-mono uppercase text-zinc-300">POD 1:1</span>
+      </div>
+
+      <!-- Battery & Signal Icons -->
+      <div class="flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5 fill-current text-zinc-300" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 18.25a.75.75 0 0 0 1.06 1.06l1.24-1.24A8.96 8.96 0 0 0 12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 2c3.87 0 7 3.13 7 7 0 1.63-.56 3.13-1.5 4.33L10.33 9.17A4.97 4.97 0 0 1 12 5zm-5.5 7c0-1.63.56-3.13 1.5-4.33l7.17 7.17A4.97 4.97 0 0 1 12 19c-3.87 0-7-3.13-7-7z"/></svg>
+        <span class="text-[11px] font-mono text-zinc-300">5G</span>
+        <!-- Battery Icon -->
+        <div class="w-5 h-2.5 rounded-[4px] border border-zinc-400 flex items-center p-0.5">
+          <div id="batteryLevel" class="h-full rounded-[2px] w-[88%] transition-all duration-500" style="background-color: var(--u1-color);"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Minimalist Black App Header (High-End White Text "FOCUS" Header Logo) -->
+    <header class="px-5 py-2.5 flex items-center justify-between border-b border-white/[0.08] shrink-0 z-20 bg-[#000000]/95 backdrop-blur-xl">
+      
+      <!-- Left: Minimalist High-End Pure White Typographic Wordmark "FOCUS" -->
+      <div class="flex items-center cursor-pointer group" onclick="openSettingsModal('branding')" title="FOCUS Settings">
+        <span id="headerAppName" class="text-base sm:text-lg font-black tracking-[0.28em] text-white uppercase select-none transition-opacity group-hover:opacity-80">FOCUS</span>
+      </div>
+
+      <!-- Center: Partner Pod Binding Pill (Strict 1-to-1 ZAU8PP System) -->
+      <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-900/90 border border-white/10 shadow-sm cursor-pointer spring-tap hover:border-white/20" onclick="openPodModal()" title="View 1-to-1 Pod Binding">
+        <div class="relative flex items-center justify-center">
+          <span id="headerStatusDot" class="w-2 h-2 rounded-full" style="background-color: var(--u2-color);"></span>
+          <span id="headerStatusPing" class="absolute w-3.5 h-3.5 rounded-full animate-ping opacity-60" style="background-color: var(--u2-color);"></span>
+        </div>
+        <div class="flex flex-col leading-tight">
+          <div class="flex items-center gap-1">
+            <span id="headerPartnerName" class="text-[11px] font-bold text-zinc-200 truncate max-w-[70px]">Partner</span>
+            <span id="headerPodLockBadge" class="text-[8px] px-1 py-0.2 rounded-full font-mono font-bold bg-rose-950/80 text-rose-400 border border-rose-800/50">🔒 1/1</span>
+          </div>
+          <span class="text-[9px] text-zinc-400 font-mono tracking-wider font-semibold" id="headerPodCode">ZAU8PP</span>
+        </div>
+      </div>
+
+      <!-- Right Actions: Streak, Theme Toggle, Settings Button -->
+      <div class="flex items-center gap-1.5">
+        <!-- Flame Streak Pill -->
+        <button onclick="openStreakModal()" class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-950/40 border border-amber-800/60 text-amber-300 text-xs font-bold shadow-sm spring-tap">
+          <span>🔥</span>
+          <span id="streakCountText" class="text-[11px] font-mono">12d</span>
+        </button>
+
+        <!-- Dark / AMOLED Mode Toggle -->
+        <button onclick="toggleDarkMode()" class="w-8 h-8 rounded-full flex items-center justify-center bg-zinc-900 border border-white/10 text-zinc-300 shadow-sm spring-tap hover:border-white/20" title="Toggle Dark/Light Mode">
+          <span id="themeIcon" class="text-xs">☀️</span>
+        </button>
+
+        <!-- Hamburger / Settings Menu -->
+        <button onclick="openSettingsModal()" class="w-8 h-8 rounded-full flex items-center justify-center bg-zinc-900 border border-white/10 text-zinc-200 shadow-sm spring-tap hover:border-white/20" title="Settings & Pod">
+          <svg class="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
-        </div>
-        <div class="brand-text">
-          <span class="gym-title">DHARMANAGAR <span class="accent-text">IRON GYM</span></span>
-          <span class="gym-loc">📍 Dharmanagar, North Tripura</span>
-        </div>
+        </button>
       </div>
+    </header>
 
-      <!-- User Bar / Auth State -->
-      <div class="header-actions">
-        <div id="auth-user-bar" class="user-bar hidden">
-          <div class="user-chip" id="user-chip" title="Click to view options">
-            <span class="user-avatar" id="user-avatar">?</span>
-            <div class="user-meta">
-              <span class="user-name" id="user-full-name">Loading...</span>
-              <span class="user-badge" id="user-role-badge">Member</span>
-            </div>
-          </div>
-          <button id="btn-quick-switch" class="btn btn-sm btn-outline" title="Switch between Admin & Members for demo">
-            ⇄ Switch User
-          </button>
-          <button id="btn-logout" class="btn btn-sm btn-ghost" title="Log out">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-              <polyline points="16 17 21 12 16 7"></polyline>
-              <line x1="21" y1="12" x2="9" y2="12"></line>
-            </svg>
-          </button>
-        </div>
-
-        <div id="guest-bar" class="guest-bar">
-          <button id="btn-open-login" class="btn btn-primary btn-sm">Sign In</button>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- Main View Container -->
-  <main class="app-main">
-    <!-- View 0: Login View -->
-    <section id="view-login" class="view-panel hidden">
-      <div class="login-wrapper">
-        <div class="login-card">
-          <div class="login-header">
-            <div class="login-logo-pill">⚡ MEMBER & TRAINER ACCESS</div>
-            <h2>Welcome Back</h2>
-            <p>Sign in to manage schedules, track workouts, and monitor fitness progress in Dharmanagar.</p>
-          </div>
-
-          <form id="login-form" class="login-form">
-            <div class="form-group">
-              <label for="login-username">Username</label>
-              <input type="text" id="login-username" name="username" class="form-input" placeholder="e.g. rahuldas" required autocomplete="username">
-              <small class="form-hint text-muted">Full name in lowercase with no spaces (e.g., rahul das &rarr; <code>rahuldas</code>)</small>
-            </div>
-
-            <div class="form-group">
-              <label for="login-password">Password</label>
-              <input type="password" id="login-password" name="password" class="form-input" placeholder="e.g. 15082000" required autocomplete="current-password">
-              <small class="form-hint text-muted">Date of birth numbers only in DDMMYYYY format (e.g., <code>15082000</code>)</small>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-submit-btn">
-              Sign In to Account
+    <!-- Dynamic User Persona Switcher & Inline Name Editing Bar -->
+    <div class="px-4 py-2 bg-[#080b11] border-b border-white/[0.08] flex items-center justify-between shrink-0 text-xs">
+      <div class="flex items-center gap-1.5 overflow-hidden">
+        <span class="text-[10px] uppercase tracking-wider font-semibold text-zinc-400 shrink-0">Log As:</span>
+        <div class="inline-flex p-0.5 rounded-xl bg-zinc-900 border border-white/10 max-w-full">
+          <!-- User 1 Slot ("You") -->
+          <div class="flex items-center">
+            <button id="user1Btn" onclick="switchActiveUser('u1')" class="px-2.5 py-1 rounded-lg text-xs font-bold spring-tap flex items-center gap-1.5 shadow-sm">
+              <span id="user1Dot" class="w-2.5 h-2.5 rounded-full" style="background-color: var(--u1-color);"></span>
+              <span id="user1PillName" class="truncate max-w-[75px]">You</span>
             </button>
+            <button onclick="quickEditUserName('u1')" class="px-1 text-zinc-400 hover:text-white text-[10px] spring-tap" title="Edit your name">✎</button>
+          </div>
 
-            <div class="text-center mt-3">
-              <span class="text-sm text-muted">New Member?</span>
-              <button type="button" class="btn btn-sm btn-outline ml-1" id="btn-open-register">Register as Member</button>
+          <!-- User 2 Slot ("Partner") -->
+          <div class="flex items-center border-l border-white/10 ml-0.5 pl-0.5">
+            <button id="user2Btn" onclick="switchActiveUser('u2')" class="px-2.5 py-1 rounded-lg text-xs font-semibold spring-tap flex items-center gap-1.5 text-zinc-400 hover:text-white">
+              <span id="user2Dot" class="w-2.5 h-2.5 rounded-full opacity-70" style="background-color: var(--u2-color);"></span>
+              <span id="user2PillName" class="truncate max-w-[75px]">Partner</span>
+            </button>
+            <button onclick="quickEditUserName('u2')" class="px-1 text-zinc-400 hover:text-white text-[10px] spring-tap" title="Edit partner name">✎</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Peer Simulation Button -->
+      <button id="simulatePartnerBtn" onclick="simulatePartnerActivity()" class="text-[11px] font-semibold spring-tap flex items-center gap-1 px-2.5 py-1 rounded-lg border bg-zinc-900 border-white/10 hover:border-white/20 text-zinc-200 shadow-sm" title="Simulate partner checking in">
+        <span>⚡</span>
+        <span id="simulateBtnText">Simulate</span>
+      </button>
+    </div>
+
+    <!-- Main Scrollable Body -->
+    <main id="mainScrollArea" class="flex-1 overflow-y-auto px-4 py-3 space-y-4 pb-24">
+      
+      <!-- TAB 1: TOGETHER (HERO DUAL-ARC & DUO PROGRESS) -->
+      <div id="viewTogether" class="space-y-4">
+        
+        <!-- Hero Dual-Arc Gauge Card with Liquid Glassmorphism & High Contrast Borders -->
+        <div class="liquid-card rounded-3xl p-5 text-center transition-all">
+          
+          <!-- Subtle pitch-black background ambient grid -->
+          <div class="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:16px_16px] opacity-20 pointer-events-none"></div>
+
+          <!-- Arc Gauge Canvas & Centered Metrics -->
+          <div class="relative flex flex-col items-center justify-center">
+            
+            <!-- Canvas Semi-Circle Dot-Matrix Arc -->
+            <div class="relative w-full max-w-[320px] h-[175px] flex items-center justify-center">
+              <canvas id="gaugeCanvas" class="w-full h-full block cursor-pointer"></canvas>
+
+              <!-- Centered Text Overlay inside the Semi-Circle Arc -->
+              <div class="absolute top-[34px] inset-x-0 flex flex-col items-center pointer-events-none">
+                <span class="text-[9px] font-extrabold tracking-[0.25em] uppercase text-zinc-400 mb-0.5">
+                  GOALS REACHED TODAY
+                </span>
+                
+                <!-- Large Centered Bold Percentage -->
+                <div class="flex items-baseline justify-center gap-1">
+                  <span id="heroCombinedPct" class="font-mono text-5xl font-black tracking-tight text-white">
+                    62
+                  </span>
+                  <span class="font-mono text-xl font-bold text-zinc-400">
+                    %
+                  </span>
+                </div>
+                <span class="text-[9px] font-bold text-zinc-400 tracking-widest uppercase">
+                  PERCENT
+                </span>
+
+                <!-- Subtle Yesterday Delta Pill -->
+                <div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-zinc-900/90 border border-white/10 text-[11px] text-zinc-300">
+                  <span class="text-zinc-400">Yesterday: 54%</span>
+                  <span id="deltaBadge" class="font-bold text-emerald-400 font-mono">+8% ▲</span>
+                </div>
+              </div>
             </div>
-          </form>
 
-          <div class="quick-demo-section">
-            <div class="demo-divider"><span>OR ONE-CLICK DEMO LOGIN</span></div>
-            <div class="demo-buttons-grid">
-              <button class="btn btn-outline btn-demo" data-user="admin">
-                👑 <strong>Admin</strong> (admin / 01012000)
-              </button>
-              <button class="btn btn-outline btn-demo" data-user="rahuldebnath">
-                🏋️ <strong>Rahul</strong> (rahuldebnath / 15082000)
-              </button>
-              <button class="btn btn-outline btn-demo" data-user="sneharoy">
-                ⚡ <strong>Sneha</strong> (sneharoy / 10051998)
-              </button>
-              <button class="btn btn-outline btn-demo" data-user="bikramdas">
-                🏃 <strong>Bikram</strong> (bikramdas / 25121995)
+            <!-- Dynamic Duo Legend Bars & Scores -->
+            <div class="w-full grid grid-cols-2 gap-3 pt-3 mt-1 border-t border-white/[0.08]">
+              
+              <!-- User 1 Slot (Outer Arc) -->
+              <div class="flex flex-col items-center p-2.5 rounded-2xl bg-zinc-900/60 border border-white/10 transition-colors">
+                <div class="flex items-center gap-1.5 mb-1 truncate max-w-full">
+                  <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: var(--u1-color); box-shadow: 0 0 10px var(--u1-glow);"></span>
+                  <span id="legendUser1Name" class="text-xs font-bold text-zinc-200 truncate">You</span>
+                </div>
+                <div class="flex items-baseline gap-1">
+                  <span id="u1PctText" class="font-mono text-lg font-black" style="color: var(--u1-color);">75%</span>
+                  <span id="u1GoalsCount" class="text-[11px] text-zinc-400 font-medium">(3/4)</span>
+                </div>
+                <span class="text-[9px] font-semibold text-zinc-400 uppercase tracking-widest mt-0.5">Outer Arc</span>
+              </div>
+
+              <!-- User 2 Slot (Inner Arc) -->
+              <div class="flex flex-col items-center p-2.5 rounded-2xl bg-zinc-900/60 border border-white/10 transition-colors">
+                <div class="flex items-center gap-1.5 mb-1 truncate max-w-full">
+                  <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: var(--u2-color); box-shadow: 0 0 10px var(--u2-glow);"></span>
+                  <span id="legendUser2Name" class="text-xs font-bold text-zinc-200 truncate">Partner</span>
+                </div>
+                <div class="flex items-baseline gap-1">
+                  <span id="u2PctText" class="font-mono text-lg font-black" style="color: var(--u2-color);">50%</span>
+                  <span id="u2GoalsCount" class="text-[11px] text-zinc-400 font-medium">(2/4)</span>
+                </div>
+                <span class="text-[9px] font-semibold text-zinc-400 uppercase tracking-widest mt-0.5">Inner Arc</span>
+              </div>
+            </div>
+
+            <!-- Pod Sync Status Banner -->
+            <div id="podSyncBanner" class="w-full mt-3 px-3.5 py-2 rounded-xl bg-zinc-900/80 border border-white/10 text-[11px] flex items-center justify-between text-zinc-300 font-medium">
+              <span class="flex items-center gap-1.5 truncate mr-2">
+                <span id="syncDot" class="w-2 h-2 rounded-full animate-pulse" style="background-color: var(--u1-color);"></span>
+                <span id="leadStatusText" class="truncate font-medium">Both partners synced</span>
+              </span>
+              <button onclick="sendNudgeReaction('highfive')" class="text-xs font-bold shrink-0 hover:underline spring-subtle" style="color: var(--u1-color);">
+                High-Five ✋
               </button>
             </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- View 1: ADMIN PANEL -->
-    <section id="view-admin" class="view-panel hidden">
-      <!-- Admin Navigation Tabs -->
-      <div class="admin-nav-bar">
-        <div class="admin-nav-pill">
-          <button class="admin-tab active" data-tab="admin-members">
-            👥 Members Management
-          </button>
-          <button class="admin-tab" data-tab="admin-splits">
-            📋 Workout Split Designer
-          </button>
-          <button class="admin-tab" data-tab="admin-stats">
-            📊 Overview & Metrics
-          </button>
-        </div>
-      </div>
-
-      <!-- Tab 1: Member Management -->
-      <div id="tab-admin-members" class="admin-tab-content active">
-        <div class="section-header-row">
-          <div>
-            <h1 class="page-title">Gym Members</h1>
-            <p class="page-subtitle">Manage member profiles, subscriptions, and assigned workout split routines.</p>
+        <!-- Section Header: Today's Active Habits + Add Button -->
+        <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center gap-2">
+            <h2 class="text-xs font-black uppercase tracking-[0.18em] text-zinc-200">
+              Today's Goals
+            </h2>
+            <span id="activeGoalsCountBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-900 border border-white/10 text-zinc-300 font-bold font-mono">
+              7 Active
+            </span>
           </div>
-          <button id="btn-add-member" class="btn btn-primary">
-            + New Member
+
+          <!-- Add / Manage Goal Button -->
+          <button onclick="openGoalPickerDrawer()" class="flex items-center gap-1 px-3 py-1 rounded-full text-white text-xs font-bold shadow-sm spring-tap" style="background-color: var(--u1-color);">
+            <span>+</span>
+            <span>Manage Goals</span>
           </button>
         </div>
 
-        <!-- Filter & Search Bar -->
-        <div class="filter-card">
-          <div class="search-input-wrap">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="text" id="member-search-input" class="form-input" placeholder="Search by name, username, or phone...">
+        <!-- Active Habit Cards List (Fluid Wave & Tactile Web Audio Check-ins) -->
+        <div id="habitCardsContainer" class="space-y-3">
+          <!-- Dynamically populated cards with dual rings, comparison bars, and ripple check-ins -->
+        </div>
+
+        <!-- Live Duo Activity Feed -->
+        <div class="mt-6 pt-3 border-t border-white/[0.08]">
+          <div class="flex items-center justify-between mb-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">
+              Live Pod Feed
+            </h3>
+            <span class="text-[10px] text-zinc-400 font-medium font-mono">1:1 Auto-synced</span>
           </div>
-          <div class="filter-status-group">
-            <button class="filter-pill active" data-status="all">All</button>
-            <button class="filter-pill" data-status="active">Active</button>
-            <button class="filter-pill" data-status="expired">Expired</button>
-            <button class="filter-pill" data-status="inactive">Inactive</button>
-          </div>
-        </div>
-
-        <!-- Members Grid / Table -->
-        <div id="members-list-container" class="members-grid">
-          <div class="loading-spinner">Loading members...</div>
-        </div>
-      </div>
-
-      <!-- Tab 2: Workout Split Designer -->
-      <div id="tab-admin-splits" class="admin-tab-content">
-        <div class="section-header-row">
-          <div>
-            <h1 class="page-title">Weekly Workout Splits</h1>
-            <p class="page-subtitle">Design target muscle groups, exercise selections, sets, reps, and rest timers for each day.</p>
-          </div>
-          <button id="btn-create-split" class="btn btn-primary">
-            + Design New Split
-          </button>
-        </div>
-
-        <div id="splits-list-container" class="splits-grid">
-          <div class="loading-spinner">Loading workout splits...</div>
-        </div>
-      </div>
-
-      <!-- Tab 3: Admin Stats -->
-      <div id="tab-admin-stats" class="admin-tab-content">
-        <div class="section-header-row">
-          <div>
-            <h1 class="page-title">Gym Performance & Stats</h1>
-            <p class="page-subtitle">Daily activity and membership metrics for Dharmanagar Iron Gym.</p>
+          <div id="liveActivityFeed" class="space-y-2">
+            <!-- Dynamically populated activity logs -->
           </div>
         </div>
 
-        <div class="stats-kpi-grid" id="admin-kpi-grid">
-          <!-- Populated by JS -->
-        </div>
-
-        <div class="quick-info-card mt-4">
-          <h3>🏋️ Dharmanagar Iron Gym Operational Tips</h3>
-          <ul class="tips-list">
-            <li><strong>Personalized Splits:</strong> Create custom splits for beginner, intermediate, and advanced members or duplicate the standard 5-Day split to tailor volume.</li>
-            <li><strong>Daily Check-ins:</strong> Members can check off completed exercises on their mobile phones on the gym floor in real time.</li>
-            <li><strong>Progress Tracking:</strong> Encourage members to record their body weight and weight lifted to promote progressive overload.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <!-- View 2: MEMBER DASHBOARD -->
-    <section id="view-member" class="view-panel hidden">
-      <!-- Member Mobile Nav Tabs -->
-      <div class="member-nav-bar">
-        <button class="member-tab active" data-tab="member-today">
-          <span class="tab-icon">⚡</span>
-          <span class="tab-label">Today's Workout</span>
-        </button>
-        <button class="member-tab" data-tab="member-weekly">
-          <span class="tab-icon">📅</span>
-          <span class="tab-label">Weekly Split</span>
-        </button>
-        <button class="member-tab" data-tab="member-progress">
-          <span class="tab-icon">⚖️</span>
-          <span class="tab-label">Weight & Progress</span>
-        </button>
-        <button class="member-tab" data-tab="member-profile">
-          <span class="tab-icon">👤</span>
-          <span class="tab-label">My Membership</span>
-        </button>
       </div>
 
-      <!-- Member Tab 1: Today's Workout -->
-      <div id="tab-member-today" class="member-tab-content active">
-        <!-- Today's Hero Card -->
-        <div class="today-hero-card" id="today-hero-card">
-          <div class="today-hero-header">
+      <!-- TAB 2: INSIGHTS (WEEKLY BAR CHARTS & DUO SYNERGY) -->
+      <div id="viewInsights" class="hidden space-y-4">
+        
+        <!-- Header info -->
+        <div class="liquid-card rounded-3xl p-5">
+          <div class="flex items-center justify-between mb-3">
             <div>
-              <span class="today-tag" id="today-date-badge">TODAY'S WORKOUT</span>
-              <h2 class="today-muscle-title" id="today-muscle-title">Loading...</h2>
-              <p class="today-split-name" id="today-split-name">Routine: Loading...</p>
+              <span class="text-[10px] font-bold tracking-widest text-zinc-400 uppercase">WEEKLY PERFORMANCE</span>
+              <h2 class="text-lg font-black text-white">Duo Synergy: 92%</h2>
             </div>
-            <div class="today-progress-ring-wrap">
-              <div class="progress-radial-text">
-                <span class="radial-number" id="radial-completed-count">0/0</span>
-                <span class="radial-sub">DONE</span>
+            <div class="px-3 py-1 rounded-full text-xs font-bold border" style="background-color: rgba(16, 185, 129, 0.15); color: var(--u1-color); border-color: rgba(16, 185, 129, 0.3);">
+              Top 5% Pods
+            </div>
+          </div>
+          <p id="insightsDescription" class="text-xs text-zinc-400 leading-relaxed">
+            Side-by-side completion history for the past 7 days. Bars dynamically match each partner's signature color.
+          </p>
+
+          <!-- Weekly Comparison Bar Chart -->
+          <div class="mt-6">
+            <div class="h-44 flex items-end justify-between gap-2 pt-6 px-1 border-b border-white/[0.08]">
+              <!-- Monday -->
+              <div class="flex-1 flex flex-col items-center h-full justify-end group">
+                <div class="w-full flex items-end justify-center gap-1 h-32">
+                  <div style="height: 85%; background-color: var(--u1-color);" class="w-3 rounded-t-sm shadow-sm transition-all group-hover:brightness-110"></div>
+                  <div style="height: 90%; background-color: var(--u2-color);" class="w-3 rounded-t-sm shadow-sm transition-all group-hover:brightness-110"></div>
+                </div>
+                <span class="text-[10px] font-bold text-zinc-400 mt-2 font-mono">M</span>
+              </div>
+
+              <!-- Tuesday -->
+              <div class="flex-1 flex flex-col items-center h-full justify-end group">
+                <div class="w-full flex items-end justify-center gap-1 h-32">
+                  <div style="height: 100%; background-color: var(--u1-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                  <div style="height: 75%; background-color: var(--u2-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                </div>
+                <span class="text-[10px] font-bold text-zinc-400 mt-2 font-mono">T</span>
+              </div>
+
+              <!-- Wednesday -->
+              <div class="flex-1 flex flex-col items-center h-full justify-end group">
+                <div class="w-full flex items-end justify-center gap-1 h-32">
+                  <div style="height: 70%; background-color: var(--u1-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                  <div style="height: 80%; background-color: var(--u2-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                </div>
+                <span class="text-[10px] font-bold text-zinc-400 mt-2 font-mono">W</span>
+              </div>
+
+              <!-- Thursday -->
+              <div class="flex-1 flex flex-col items-center h-full justify-end group">
+                <div class="w-full flex items-end justify-center gap-1 h-32">
+                  <div style="height: 95%; background-color: var(--u1-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                  <div style="height: 95%; background-color: var(--u2-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                </div>
+                <span class="text-[10px] font-bold text-zinc-400 mt-2 font-mono">T</span>
+              </div>
+
+              <!-- Friday -->
+              <div class="flex-1 flex flex-col items-center h-full justify-end group">
+                <div class="w-full flex items-end justify-center gap-1 h-32">
+                  <div style="height: 80%; background-color: var(--u1-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                  <div style="height: 65%; background-color: var(--u2-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                </div>
+                <span class="text-[10px] font-bold text-zinc-400 mt-2 font-mono">F</span>
+              </div>
+
+              <!-- Saturday -->
+              <div class="flex-1 flex flex-col items-center h-full justify-end group">
+                <div class="w-full flex items-end justify-center gap-1 h-32">
+                  <div style="height: 90%; background-color: var(--u1-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                  <div style="height: 85%; background-color: var(--u2-color);" class="w-3 rounded-t-sm shadow-sm"></div>
+                </div>
+                <span class="text-[10px] font-bold text-zinc-400 mt-2 font-mono">S</span>
+              </div>
+
+              <!-- Sunday (Today) -->
+              <div class="flex-1 flex flex-col items-center h-full justify-end group bg-zinc-900/60 rounded-t-xl border border-white/5">
+                <div class="w-full flex items-end justify-center gap-1 h-32">
+                  <div id="chartSunU1" style="height: 75%; background-color: var(--u1-color);" class="w-3 rounded-t-sm spring-progress"></div>
+                  <div id="chartSunU2" style="height: 50%; background-color: var(--u2-color);" class="w-3 rounded-t-sm spring-progress"></div>
+                </div>
+                <span class="text-[10px] font-black mt-2 font-mono" style="color: var(--u1-color);">Today</span>
+              </div>
+            </div>
+
+            <!-- Dynamic Chart Legend -->
+            <div class="flex items-center justify-center gap-6 mt-3 text-xs">
+              <div class="flex items-center gap-1.5 font-semibold text-zinc-300">
+                <span class="w-3 h-3 rounded-sm" style="background-color: var(--u1-color);"></span>
+                <span id="chartLegendU1">You (Outer Arc)</span>
+              </div>
+              <div class="flex items-center gap-1.5 font-semibold text-zinc-300">
+                <span class="w-3 h-3 rounded-sm" style="background-color: var(--u2-color);"></span>
+                <span id="chartLegendU2">Partner (Inner Arc)</span>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Progress Bar -->
-          <div class="today-progress-wrap">
-            <div class="progress-label-row">
-              <span id="today-progress-status">0 of 0 exercises completed</span>
-              <strong id="today-progress-pct">0%</strong>
+        <!-- Duo Consistency Metrics Grid -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="liquid-card p-4 rounded-2xl">
+            <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Days Led</span>
+            <div class="mt-1 flex items-baseline justify-between text-xs font-bold">
+              <span id="daysLedU1" style="color: var(--u1-color);">You: 4d</span>
+              <span id="daysLedU2" style="color: var(--u2-color);">Partner: 3d</span>
             </div>
-            <div class="progress-bar-track">
-              <div class="progress-bar-fill" id="today-progress-fill" style="width: 0%"></div>
+            <div class="w-full h-1.5 bg-zinc-800 rounded-full mt-2 overflow-hidden flex">
+              <div class="h-full w-[57%] transition-all" style="background-color: var(--u1-color);"></div>
+              <div class="h-full w-[43%] transition-all" style="background-color: var(--u2-color);"></div>
             </div>
+          </div>
+
+          <div class="liquid-card p-4 rounded-2xl">
+            <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Total Crushed</span>
+            <div class="mt-1 flex items-baseline gap-1">
+              <span class="text-xl font-mono font-black text-white">184</span>
+              <span class="text-xs font-bold" style="color: var(--u1-color);">+18 this wk</span>
+            </div>
+            <span class="text-[10px] text-zinc-400">92% pod completion</span>
           </div>
         </div>
 
-        <!-- Exercises List for Today -->
-        <div class="section-title-row">
-          <h3>Exercises for Today</h3>
-          <span class="badge badge-info" id="today-exercise-count">0 Exercises</span>
+        <!-- Accountability Streak History -->
+        <div class="liquid-card p-4 rounded-2xl space-y-2">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Consistency Highlights</h4>
+          <div class="flex items-center justify-between text-xs py-1 border-b border-white/[0.08]">
+            <span class="text-zinc-300">Longest Pod Streak</span>
+            <span class="font-bold text-white font-mono">28 Days</span>
+          </div>
+          <div class="flex items-center justify-between text-xs py-1 border-b border-white/[0.08]">
+            <span class="text-zinc-300">Most Consistent Habit</span>
+            <span class="font-bold" style="color: var(--u1-color);">Hydration (98%)</span>
+          </div>
+          <div class="flex items-center justify-between text-xs py-1">
+            <span class="text-zinc-300">Nudges Exchanged</span>
+            <span class="font-bold" style="color: var(--u2-color);">42 High-Fives</span>
+          </div>
         </div>
 
-        <div id="today-exercises-container" class="exercises-container">
-          <div class="loading-spinner">Loading today's exercises...</div>
-        </div>
       </div>
 
-      <!-- Member Tab 2: Weekly Split Calendar -->
-      <div id="tab-member-weekly" class="member-tab-content">
-        <div class="section-header-row">
-          <div>
-            <h1 class="page-title">Weekly Workout Calendar</h1>
-            <p class="page-subtitle">Your active 7-day training schedule. Tap any day to preview planned exercises.</p>
+      <!-- TAB 3: SOLO (PERSONAL BREAKDOWN & PROFILE) -->
+      <div id="viewSolo" class="hidden space-y-4">
+        
+        <!-- Personal Active User Profile Header -->
+        <div class="liquid-card rounded-3xl p-5 text-center">
+          <div id="soloAvatarBox" class="w-16 h-16 rounded-full border-2 text-3xl flex items-center justify-center mx-auto mb-3 shadow-lg transition-transform spring-tap bg-zinc-900" style="border-color: var(--active-user-color, var(--u1-color));">
+            <span id="soloAvatar">👩‍🚀</span>
           </div>
-        </div>
+          <div class="flex items-center justify-center gap-1.5">
+            <h2 class="text-lg font-black text-white" id="soloName">You</h2>
+            <button onclick="quickEditCurrentSoloName()" class="text-xs text-zinc-400 hover:text-white spring-tap">✎</button>
+          </div>
+          <p class="text-xs text-zinc-400" id="soloSubtitle">Accountability Partner in Pod ZAU8PP</p>
 
-        <!-- 7-Day Calendar Grid -->
-        <div class="weekly-calendar-grid" id="weekly-calendar-grid">
-          <!-- Populated by JS -->
-        </div>
-
-        <!-- Selected Day Detail Preview -->
-        <div class="selected-day-card mt-4" id="selected-day-preview">
-          <div class="preview-header">
-            <div>
-              <span class="badge badge-primary" id="preview-day-name">Monday</span>
-              <h3 id="preview-target-muscle" class="mt-1">Chest & Triceps</h3>
+          <!-- Today's Individual Score Gauge Bar -->
+          <div class="mt-4 p-3 bg-zinc-900/80 rounded-2xl border border-white/10">
+            <div class="flex justify-between items-center text-xs font-bold mb-1.5">
+              <span class="text-zinc-300">Your Score Today</span>
+              <span id="soloScorePct" class="font-mono text-sm font-black" style="color: var(--active-user-color, var(--u1-color));">75%</span>
             </div>
-            <span class="badge" id="preview-day-status">Scheduled</span>
-          </div>
-          <div id="preview-exercises-list" class="preview-exercises-list mt-3">
-            <!-- Populated on day click -->
+            <div class="w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+              <div id="soloProgressBar" class="h-full rounded-full spring-progress" style="width: 75%; background-color: var(--active-user-color, var(--u1-color));"></div>
+            </div>
           </div>
         </div>
+
+        <!-- Solo Checklist Section -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between px-1">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Your Action Checklist</h3>
+            <span class="text-[10px] text-zinc-400 font-mono">Click to complete</span>
+          </div>
+          <div id="soloChecklistContainer" class="space-y-2">
+            <!-- Dynamically populated solo checklist with ripple and haptic feedback -->
+          </div>
+        </div>
+
+        <!-- Badges & Achievements -->
+        <div class="liquid-card rounded-3xl p-5 space-y-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Pod Badges Earned</h3>
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="p-3 rounded-2xl bg-amber-950/20 border border-amber-800/40 spring-tap">
+              <span class="text-2xl">🔥</span>
+              <div class="text-[11px] font-bold text-amber-300 mt-1">10-Day Streak</div>
+              <div class="text-[9px] text-zinc-400">Unlocked</div>
+            </div>
+            <div class="p-3 rounded-2xl bg-emerald-950/20 border border-emerald-800/40 spring-tap">
+              <span class="text-2xl">⚡</span>
+              <div class="text-[11px] font-bold text-emerald-300 mt-1">1:1 Locked</div>
+              <div class="text-[9px] text-zinc-400">Active</div>
+            </div>
+            <div class="p-3 rounded-2xl bg-purple-950/20 border border-purple-800/40 spring-tap">
+              <span class="text-2xl">🧘</span>
+              <div class="text-[11px] font-bold text-purple-300 mt-1">Zen Duo</div>
+              <div class="text-[9px] text-zinc-400">Unlocked</div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Member Tab 3: Weight & Progress Tracker -->
-      <div id="tab-member-progress" class="member-tab-content">
-        <div class="section-header-row">
-          <div>
-            <h1 class="page-title">Weight & Progress Tracker</h1>
-            <p class="page-subtitle">Log daily weigh-ins and watch your body composition transformation.</p>
+    </main>
+
+    <!-- Floating Bottom Navigation Pill Bar (Glassmorphic AMOLED & Apple Spring) -->
+    <nav class="absolute bottom-4 inset-x-5 h-16 liquid-nav-pill rounded-full flex items-center justify-around px-3 z-30">
+      
+      <!-- Together Tab -->
+      <button id="navTogether" onclick="switchNavTab('together')" class="flex flex-col items-center justify-center flex-1 py-1 rounded-full font-bold transition-all spring-subtle" style="color: var(--u1-color);">
+        <svg class="w-5 h-5 fill-none stroke-current stroke-2 mb-0.5" viewBox="0 0 24 24">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <span class="text-[10px] tracking-wide">Together</span>
+      </button>
+
+      <!-- Insights Tab -->
+      <button id="navInsights" onclick="switchNavTab('insights')" class="flex flex-col items-center justify-center flex-1 py-1 rounded-full text-zinc-400 hover:text-white font-semibold transition-all spring-subtle">
+        <svg class="w-5 h-5 fill-none stroke-current stroke-2 mb-0.5" viewBox="0 0 24 24">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span class="text-[10px] tracking-wide">Insights</span>
+      </button>
+
+      <!-- Solo Tab -->
+      <button id="navSolo" onclick="switchNavTab('solo')" class="flex flex-col items-center justify-center flex-1 py-1 rounded-full text-zinc-400 hover:text-white font-semibold transition-all spring-subtle">
+        <svg class="w-5 h-5 fill-none stroke-current stroke-2 mb-0.5" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span class="text-[10px] tracking-wide">Solo</span>
+      </button>
+    </nav>
+
+    <!-- FLOATING CONFETTI / REACTION CANVAS OVERLAY -->
+    <canvas id="reactionCanvas" class="absolute inset-0 pointer-events-none z-50"></canvas>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toastContainer" class="absolute top-16 inset-x-4 flex flex-col items-center gap-2 pointer-events-none z-50"></div>
+
+    <!-- CAPACITY LIMIT ALERT BANNER MODAL (Strict 1-to-1 Alert) -->
+    <div id="capacityAlertModal" class="fixed inset-0 bg-black/75 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+      <div class="liquid-card w-full max-w-sm rounded-3xl p-6 text-center space-y-4 modal-enter-spring border-rose-800/80 shadow-2xl">
+        <div class="w-14 h-14 rounded-full bg-rose-950/60 border border-rose-800 text-rose-400 flex items-center justify-center text-2xl mx-auto shadow-lg animate-bounce">
+          ⚠️
+        </div>
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-rose-400">STRICT 1-TO-1 CAPACITY</span>
+          <h3 class="text-base font-black text-white mt-1">Pod is at full capacity (1/1 Partner paired)</h3>
+          <p id="capacityAlertMsg" class="text-xs text-zinc-400 mt-2 leading-relaxed">
+            This invite code has already reached its strict 1-to-1 limit. A pod strictly binds only ONE partner.
+          </p>
+        </div>
+        
+        <div class="p-3 rounded-2xl bg-rose-950/30 border border-rose-900/50 text-left text-xs space-y-1">
+          <div class="flex justify-between font-mono font-bold text-zinc-300">
+            <span>Capacity:</span>
+            <span class="text-rose-400">1 / 1 Paired (LOCKED)</span>
           </div>
-          <button id="btn-open-weight-modal" class="btn btn-primary">
-            + Log Weight
+          <div class="text-[11px] text-zinc-400">
+            To invite or pair someone else, the current partner must be unshared/disconnected first.
+          </div>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button onclick="closeCapacityAlert()" class="flex-1 py-2.5 rounded-xl bg-white text-zinc-900 font-bold text-xs spring-tap shadow-sm">
+            Got It
           </button>
-        </div>
-
-        <!-- Weight Stats Row -->
-        <div class="weight-kpi-grid" id="weight-kpi-grid">
-          <div class="kpi-card">
-            <span class="kpi-label">CURRENT WEIGHT</span>
-            <strong class="kpi-val" id="kpi-current-wt">-- kg</strong>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">START WEIGHT</span>
-            <strong class="kpi-val" id="kpi-start-wt">-- kg</strong>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">NET CHANGE</span>
-            <strong class="kpi-val" id="kpi-change-wt">-- kg</strong>
-          </div>
-          <div class="kpi-card">
-            <span class="kpi-label">TOTAL WEIGH-INS</span>
-            <strong class="kpi-val" id="kpi-entries-count">0</strong>
-          </div>
-        </div>
-
-        <!-- Visual Progress Chart Card -->
-        <div class="chart-card mt-4">
-          <div class="chart-header">
-            <h3>📈 Weight Progression Chart</h3>
-            <span class="text-muted text-sm">Trend over time</span>
-          </div>
-          <div class="canvas-wrap">
-            <canvas id="weight-chart-canvas" width="600" height="260"></canvas>
-          </div>
-        </div>
-
-        <!-- Weight History Table -->
-        <div class="history-card mt-4">
-          <div class="history-header">
-            <h3>Log History</h3>
-          </div>
-          <div class="table-responsive">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Weight</th>
-                  <th>Body Fat %</th>
-                  <th>Notes</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody id="weight-history-tbody">
-                <tr><td colspan="5" class="text-center text-muted">No logs recorded yet.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Member Tab 4: Member Profile & Status -->
-      <div id="tab-member-profile" class="member-tab-content">
-        <div class="profile-card">
-          <div class="profile-header">
-            <div class="profile-avatar-large" id="profile-avatar-large">?</div>
-            <div>
-              <h2 id="profile-full-name">Member Name</h2>
-              <p class="text-muted" id="profile-username">@username</p>
-              <div class="mt-2" id="profile-status-badge">
-                <span class="badge badge-success">ACTIVE MEMBER</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="profile-details-grid mt-4">
-            <div class="detail-item">
-              <span class="detail-label">MEMBERSHIP PLAN</span>
-              <strong id="profile-plan">Quarterly Hypertrophy</strong>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">ACTIVE SPLIT</span>
-              <strong id="profile-split-name">Dharmanagar 5-Day Split</strong>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">PHONE NUMBER</span>
-              <strong id="profile-phone">+91 98620 XXXXX</strong>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">START DATE</span>
-              <strong id="profile-start-date">2026-08-01</strong>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">VALID UNTIL</span>
-              <strong id="profile-expiry-date">2026-11-01</strong>
-            </div>
-            <div class="detail-item">
-              <span class="detail-label">TOTAL SESSIONS LOGGED</span>
-              <strong id="profile-total-workouts">0 Sessions</strong>
-            </div>
-          </div>
-
-          <div class="gym-badge-card mt-4">
-            <h4>📍 Dharmanagar Iron Gym Facilities</h4>
-            <p class="text-sm text-muted">Located at Main Road, Dharmanagar, North Tripura. Open Mon–Sat: 5:30 AM – 10:00 PM, Sun: 7:00 AM – 1:00 PM.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- ==================== MODALS ==================== -->
-
-  <!-- Modal 1: Quick Switch User -->
-  <div id="modal-quick-switch" class="modal-overlay hidden">
-    <div class="modal-box modal-md">
-      <div class="modal-header">
-        <h3>⇄ Switch User (Demo & Testing)</h3>
-        <button class="modal-close-btn" data-close="modal-quick-switch">&times;</button>
-      </div>
-      <div class="modal-body">
-        <p class="text-sm text-muted mb-3">Quickly swap roles between Admin (Coach) and Gym Members:</p>
-        <div id="demo-users-list" class="demo-users-list">
-          <!-- Populated by JS -->
+          <button onclick="closeCapacityAlert(); unpairPodAction();" class="flex-1 py-2.5 rounded-xl bg-rose-950/70 text-rose-300 font-bold text-xs spring-tap border border-rose-800 hover:bg-rose-900/80">
+            Unpair Now
+          </button>
         </div>
       </div>
     </div>
+
+    <!-- MODAL 1: STRICT 1-TO-1 DUO POD BINDING MODAL -->
+    <div id="podModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="liquid-card w-full max-w-sm rounded-t-[36px] sm:rounded-3xl p-6 space-y-5 modal-enter-spring max-h-[90vh] overflow-y-auto">
+        
+        <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🤝</span>
+            <div>
+              <h3 class="font-extrabold text-base text-white">1-to-1 Pod Binding</h3>
+              <p class="text-xs text-zinc-400">Strictly 2 People Locked In</p>
+            </div>
+          </div>
+          <button onclick="closePodModal()" class="w-8 h-8 rounded-full bg-zinc-900 text-zinc-400 hover:text-white flex items-center justify-center font-bold spring-tap border border-white/10">✕</button>
+        </div>
+
+        <!-- Pod Status Indicator Banner -->
+        <div id="podModalStatusCard" class="p-4 rounded-2xl border space-y-2">
+          <!-- Dynamically populated based on locked/paired vs unpaired -->
+        </div>
+
+        <!-- Current 6-Character Pod Code Box ("ZAU8PP" style) -->
+        <div class="p-4 rounded-2xl bg-zinc-900/80 border border-white/10 text-center space-y-2">
+          <div class="flex justify-between items-center text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+            <span>6-CHAR POD INVITE CODE</span>
+            <span id="podCodeStateBadge" class="px-2 py-0.5 rounded-full font-bold">LOCKED</span>
+          </div>
+          
+          <div class="flex items-center justify-center gap-2 py-1">
+            <span id="displayPodCode" class="font-mono text-3xl font-black tracking-widest text-white">ZAU8PP</span>
+          </div>
+
+          <p class="text-xs text-zinc-400">Single-use code. Pairs strictly ONE accountability partner.</p>
+
+          <div class="flex gap-2 pt-1">
+            <button onclick="copyPodCode()" class="flex-1 py-2.5 rounded-xl text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 spring-tap" style="background-color: var(--u1-color);">
+              <svg class="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy Code</span>
+            </button>
+            <button id="regenerateCodeBtn" onclick="generateNewPodCode()" class="px-3 py-2.5 rounded-xl bg-zinc-800 text-zinc-200 text-xs font-bold spring-tap border border-white/10 hover:border-white/20" title="Generate fresh 6-char code">
+              ↻ New
+            </button>
+          </div>
+        </div>
+
+        <!-- Pair / Join Box with Capacity Enforcement -->
+        <div id="joinPodSection" class="pt-2 border-t border-white/[0.08] space-y-3">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-zinc-200">Enter Partner's Invite Code</span>
+            <span class="text-[10px] text-zinc-400 font-mono">Strict single-use</span>
+          </div>
+          <div class="space-y-2">
+            <input type="text" id="inviteCodeInput" maxlength="6" placeholder="e.g. ZAU8PP" class="w-full px-4 py-3 rounded-xl bg-zinc-900 border border-white/10 font-mono text-center text-lg font-bold tracking-widest uppercase text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            <input type="text" id="partnerNameInput" placeholder="Partner's Display Name" class="w-full px-4 py-2.5 rounded-xl bg-zinc-900 border border-white/10 text-xs font-semibold text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <button onclick="handleJoinPodSubmit()" class="w-full py-2.5 rounded-xl bg-white hover:bg-zinc-200 text-zinc-900 font-bold text-xs spring-tap shadow-md">
+            Join &amp; Lock 1-to-1 Pod
+          </button>
+        </div>
+
+        <!-- Unpair Button -->
+        <div id="modalUnpairSection" class="pt-2 border-t border-white/[0.08] hidden">
+          <button onclick="unpairPodAction()" class="w-full py-2.5 rounded-xl bg-rose-950/40 text-rose-300 border border-rose-900/60 font-bold text-xs spring-tap flex items-center justify-center gap-1.5 hover:bg-rose-900/50">
+            <span>🔓 Unpair / Disconnect Partner</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MODAL 2: SETTINGS (BRANDING, PROFILES & PALETTES, 1-to-1 POD BINDING) -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="liquid-card w-full max-w-sm rounded-t-[36px] sm:rounded-3xl p-6 space-y-5 modal-enter-spring max-h-[90vh] overflow-y-auto">
+        
+        <div class="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+          <div>
+            <h3 class="font-extrabold text-base text-white">FOCUS Settings</h3>
+            <p class="text-xs text-zinc-400">Branding, Profiles &amp; 1-to-1 Pod</p>
+          </div>
+          <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-zinc-900 text-zinc-400 hover:text-white flex items-center justify-center font-bold spring-tap border border-white/10">✕</button>
+        </div>
+
+        <!-- SECTION 1: MINIMALIST APP BRANDING -->
+        <div class="p-4 rounded-2xl bg-zinc-900/80 border border-white/10 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">1. APP BRANDING</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">Header Wordmark</span>
+          </div>
+
+          <!-- App Display Name Input -->
+          <div>
+            <label class="text-xs font-bold text-zinc-300 block mb-1">App Display Wordmark</label>
+            <input type="text" id="settingAppNameInput" oninput="updateAppDisplayName(this.value)" placeholder="e.g. FOCUS" class="w-full px-3 py-2 rounded-xl bg-zinc-950 border border-white/10 text-xs font-bold tracking-widest uppercase text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <p class="text-[11px] text-zinc-400">Header displays a pure, high-end white typographic wordmark.</p>
+        </div>
+
+        <!-- SECTION 2: DYNAMIC USER PROFILES & IOS-STYLE COLOR PALETTES -->
+        <div class="p-4 rounded-2xl bg-zinc-900/80 border border-white/10 space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400">2. PROFILES &amp; SIGNATURE COLORS</span>
+            <span class="text-[10px] text-zinc-400">Live updating</span>
+          </div>
+
+          <!-- User 1 Slot ("You") -->
+          <div class="space-y-2 p-3 rounded-xl bg-zinc-950/80 border border-white/10">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-zinc-200 flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--u1-color);"></span>
+                <span>User 1 (You)</span>
+              </span>
+              <span class="text-[10px] font-mono text-zinc-400">Outer Arc</span>
+            </div>
+            
+            <input type="text" id="settingU1NameInput" oninput="updateProfileName('u1', this.value)" placeholder="Your Display Name" class="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-white/10 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+
+            <div>
+              <span class="text-[10px] font-semibold text-zinc-400 block mb-1.5">Signature Color Theme:</span>
+              <div id="u1ColorPalette" class="flex items-center gap-2 flex-wrap">
+                <!-- Dynamically generated iOS swatches -->
+              </div>
+            </div>
+          </div>
+
+          <!-- User 2 Slot ("Partner") -->
+          <div class="space-y-2 p-3 rounded-xl bg-zinc-950/80 border border-white/10">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold text-zinc-200 flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full" style="background-color: var(--u2-color);"></span>
+                <span>User 2 (Partner)</span>
+              </span>
+              <span class="text-[10px] font-mono text-zinc-400">Inner Arc</span>
+            </div>
+            
+            <input type="text" id="settingU2NameInput" oninput="updateProfileName('u2', this.value)" placeholder="Partner's Display Name" class="w-full px-3 py-1.5 rounded-lg bg-zinc-900 border border-white/10 text-xs font-bold text-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+
+            <div>
+              <span class="text-[10px] font-semibold text-zinc-400 block mb-1.5">Signature Color Theme:</span>
+              <div id="u2ColorPalette" class="flex items-center gap-2 flex-wrap">
+                <!-- Dynamically generated iOS swatches -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 3: 1-to-1 DUO POD BINDING & UNPAIR BUTTON -->
+        <div class="p-4 rounded-2xl bg-zinc-900/80 border border-white/10 space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">3. POD PAIRING (1/1 CAPACITY)</span>
+            <span id="settingsPodBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-950 text-rose-400 border border-rose-800/60 font-mono">Locked 1-to-1</span>
+          </div>
+
+          <div class="flex items-center gap-3 pt-1">
+            <div class="flex -space-x-2">
+              <span id="settingsAvatarU1" class="w-8 h-8 rounded-full text-white text-xs flex items-center justify-center font-bold border-2 border-zinc-900 shadow-sm" style="background-color: var(--u1-color);">You</span>
+              <span id="settingsAvatarU2" class="w-8 h-8 rounded-full text-white text-xs flex items-center justify-center font-bold border-2 border-zinc-900 shadow-sm" style="background-color: var(--u2-color);">P</span>
+            </div>
+            <div>
+              <div id="settingsPairingTitle" class="text-xs font-bold text-white">Paired with Partner</div>
+              <div class="text-[11px] text-zinc-400 font-mono">Code: <span id="settingsPodCodeVal" class="font-bold text-zinc-200">ZAU8PP</span></div>
+            </div>
+          </div>
+
+          <!-- Explicit Unpair / Disconnect Button -->
+          <div class="pt-2">
+            <button onclick="unpairPodAction()" id="settingsUnpairBtn" class="w-full py-2.5 rounded-xl bg-rose-950/40 hover:bg-rose-950/70 text-rose-300 border border-rose-900/60 font-bold text-xs spring-tap flex items-center justify-center gap-1.5">
+              <span>🔓 Unpair / Disconnect Partner</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Preferences: Theme & Sound Engine -->
+        <div class="space-y-2 pt-2 border-t border-white/[0.08]">
+          <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Preferences</span>
+          <div class="flex items-center justify-between text-xs py-1">
+            <span class="text-zinc-200 font-semibold">Dark AMOLED Mode</span>
+            <button onclick="toggleDarkMode()" id="settingsThemeToggle" class="px-3 py-1 rounded-lg bg-zinc-800 text-zinc-200 font-bold spring-tap border border-white/10 hover:border-white/20">
+              Toggle
+            </button>
+          </div>
+          <div class="flex items-center justify-between text-xs py-1">
+            <div>
+              <span class="text-zinc-200 font-semibold block">Tactile Audio Pop &amp; Haptic Bounces</span>
+              <span class="text-[10px] text-zinc-400">Web Audio API synthesized</span>
+            </div>
+            <input type="checkbox" id="soundToggle" onchange="toggleSound(this.checked)" checked class="w-4 h-4 text-emerald-500 rounded focus:ring-emerald-400">
+          </div>
+        </div>
+
+        <!-- Reset Demo Data Button -->
+        <button onclick="resetDemoData()" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold text-xs spring-tap border border-white/10">
+          Reset Demo Habits &amp; Defaults
+        </button>
+
+      </div>
+    </div>
+
+    <!-- MODAL 3: PRESET GOAL PICKER DRAWER -->
+    <div id="goalPickerModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="liquid-card w-full max-w-sm rounded-t-[36px] sm:rounded-3xl p-6 space-y-4 modal-enter-spring max-h-[85vh] flex flex-col">
+        
+        <div class="flex items-center justify-between pb-2 border-b border-white/[0.08] shrink-0">
+          <div>
+            <h3 class="font-extrabold text-base text-white">Preset Goal Library</h3>
+            <p class="text-xs text-zinc-400">Pick active habits for your duo pod</p>
+          </div>
+          <button onclick="closeGoalPickerDrawer()" class="w-8 h-8 rounded-full bg-zinc-900 text-zinc-400 hover:text-white flex items-center justify-center font-bold spring-tap border border-white/10">✕</button>
+        </div>
+
+        <!-- Presets List -->
+        <div id="presetGoalList" class="flex-1 overflow-y-auto space-y-2.5 pr-1">
+          <!-- Dynamically populated presets -->
+        </div>
+
+        <!-- Bottom Done button -->
+        <div class="pt-2 border-t border-white/[0.08] shrink-0">
+          <button onclick="closeGoalPickerDrawer()" class="w-full py-2.5 rounded-xl text-white font-bold text-xs shadow-md spring-tap" style="background-color: var(--u1-color);">
+            Save &amp; Update Pod
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MODAL 4: STREAK CELEBRATION MODAL -->
+    <div id="streakModal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <div class="liquid-card w-full max-w-sm rounded-t-[36px] sm:rounded-3xl p-6 text-center space-y-4 modal-enter-spring">
+        <div class="text-5xl animate-bounce">🔥</div>
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">DUO MOMENTUM</span>
+          <h3 class="text-2xl font-black text-white mt-0.5">12 Day Streak!</h3>
+          <p id="streakModalSubtitle" class="text-xs text-zinc-400 mt-1">Both partners haven't missed a single day.</p>
+        </div>
+
+        <!-- Streak Calendar Dots -->
+        <div class="bg-amber-950/20 p-4 rounded-2xl border border-amber-800/40">
+          <span class="text-[10px] font-bold text-amber-300 uppercase tracking-wider block mb-2 font-mono">Past 12 Days Unbroken</span>
+          <div class="grid grid-cols-6 gap-2">
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D1 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D2 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D3 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D4 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D5 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D6 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D7 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D8 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D9 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D10 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-500 text-black font-bold text-[10px]">D11 ✓</div>
+            <div class="py-1.5 rounded-lg bg-amber-600 text-white font-black text-[10px] shadow-sm animate-pulse">TODAY 🔥</div>
+          </div>
+        </div>
+
+        <button onclick="closeStreakModal()" class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs spring-tap shadow-lg">
+          Keep It Burning
+        </button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- Modal 2: Create / Edit Member (Admin) -->
-  <div id="modal-member-form" class="modal-overlay hidden">
-    <div class="modal-box modal-lg">
-      <div class="modal-header">
-        <h3 id="member-modal-title">Add New Gym Member</h3>
-        <button class="modal-close-btn" data-close="modal-member-form">&times;</button>
-      </div>
-      <form id="member-form" class="modal-body">
-        <input type="hidden" id="member-edit-id">
-        <div class="form-grid-2">
-          <div class="form-group">
-            <label for="member-full-name">Full Name *</label>
-            <input type="text" id="member-full-name" class="form-input" required placeholder="e.g. Rahul Das">
-          </div>
-          <div class="form-group">
-            <label for="member-dob">Date of Birth *</label>
-            <input type="date" id="member-dob" class="form-input" required>
-          </div>
+  <!-- APPLICATION CORE LOGIC & SOUND ENGINE -->
+  <script>
+    /* =========================================================================
+       1. CONSTANTS, COLOR PALETTES & STATE INITIALIZATION
+       ========================================================================= */
+    const STORAGE_KEY = 'FOCUS_DUO_ACCOUNTABILITY_V5';
 
-          <!-- Live Credential Preview Card -->
-          <div class="credentials-preview-card">
-            <div class="preview-badge">🔑 Auto-Generated Login Credentials</div>
-            <div class="preview-grid">
+    // Curated iOS-style color palette
+    const IOS_PALETTES = [
+      { name: 'Emerald', hex: '#10b981', glow: 'rgba(16, 185, 129, 0.45)' },
+      { name: 'Coral', hex: '#ff6b4a', glow: 'rgba(255, 107, 74, 0.45)' },
+      { name: 'Electric Blue', hex: '#0ea5e9', glow: 'rgba(14, 165, 233, 0.45)' },
+      { name: 'Violet', hex: '#8b5cf6', glow: 'rgba(139, 92, 246, 0.45)' },
+      { name: 'Amber', hex: '#f59e0b', glow: 'rgba(245, 158, 11, 0.45)' },
+      { name: 'Rose', hex: '#f43f5e', glow: 'rgba(244, 63, 94, 0.45)' },
+      { name: 'Cyan', hex: '#06b6d4', glow: 'rgba(6, 182, 212, 0.45)' },
+      { name: 'Indigo', hex: '#6366f1', glow: 'rgba(99, 102, 241, 0.45)' },
+    ];
+
+    const defaultPresetLibrary = [
+      { id: 'steps', name: 'Steps', icon: '👟', category: 'Movement', unit: 'steps', defaultTarget: 10000, step: 1000, type: 'counter' },
+      { id: 'sleep', name: 'Sleep', icon: '😴', category: 'Recovery', unit: 'hrs', defaultTarget: 8.0, step: 0.5, type: 'counter' },
+      { id: 'workouts', name: 'Workouts', icon: '🏋️', category: 'Fitness', unit: 'session', defaultTarget: 1, step: 1, type: 'boolean' },
+      { id: 'water', name: 'Water', icon: '💧', category: 'Hydration', unit: 'glasses', defaultTarget: 8, step: 1, type: 'counter' },
+      { id: 'meditation', name: 'Meditation', icon: '🧘', category: 'Mind', unit: 'mins', defaultTarget: 15, step: 5, type: 'counter' },
+      { id: 'reading', name: 'Reading', icon: '📖', category: 'Growth', unit: 'pages', defaultTarget: 20, step: 5, type: 'counter' },
+      { id: 'vitamins', name: 'Vitamins', icon: '💊', category: 'Health', unit: 'dose', defaultTarget: 1, step: 1, type: 'boolean' }
+    ];
+
+    const initialAppState = {
+      theme: 'dark', // Minimalist Black by default
+      soundEnabled: true,
+      branding: {
+        name: 'FOCUS',
+      },
+      pod: {
+        code: 'ZAU8PP', // Strict 1-to-1 6-character code
+        status: 'paired', // 'paired' (LOCKED) or 'unpaired'
+        capacity: 1, // Strictly 1 partner can be bound
+        currentMembers: 2,
+        streak: 12,
+        yesterdayPct: 54,
+        lockedCodes: ['ZAU8PP'], // All codes currently bound/exhausted
+      },
+      users: {
+        u1: {
+          id: 'u1',
+          name: 'You',
+          role: 'You',
+          avatar: '👩‍🚀',
+          color: '#10b981', // Emerald default
+        },
+        u2: {
+          id: 'u2',
+          name: 'Partner',
+          role: 'Partner',
+          avatar: '⚡',
+          color: '#ff6b4a', // Coral default
+        }
+      },
+      activeUser: 'u1', // 'u1' or 'u2'
+      activeTab: 'together', // 'together' | 'insights' | 'solo'
+      goals: [
+        {
+          id: 'steps',
+          name: 'Steps',
+          icon: '👟',
+          category: 'Movement',
+          unit: 'steps',
+          target: 10000,
+          step: 1000,
+          type: 'counter',
+          enabled: true,
+          u1Value: 6124,
+          u2Value: 3876
+        },
+        {
+          id: 'sleep',
+          name: 'Sleep',
+          icon: '😴',
+          category: 'Recovery',
+          unit: 'hrs',
+          target: 8.0,
+          step: 0.5,
+          type: 'counter',
+          enabled: true,
+          u1Value: 7.5,
+          u2Value: 8.0
+        },
+        {
+          id: 'workouts',
+          name: 'Workouts',
+          icon: '🏋️',
+          category: 'Fitness',
+          unit: 'session',
+          target: 1,
+          step: 1,
+          type: 'boolean',
+          enabled: true,
+          u1Value: 1,
+          u2Value: 0
+        },
+        {
+          id: 'water',
+          name: 'Water',
+          icon: '💧',
+          category: 'Hydration',
+          unit: 'glasses',
+          target: 8,
+          step: 1,
+          type: 'counter',
+          enabled: true,
+          u1Value: 6,
+          u2Value: 8
+        },
+        {
+          id: 'meditation',
+          name: 'Meditation',
+          icon: '🧘',
+          category: 'Mind',
+          unit: 'mins',
+          target: 15,
+          step: 5,
+          type: 'counter',
+          enabled: true,
+          u1Value: 15,
+          u2Value: 10
+        },
+        {
+          id: 'reading',
+          name: 'Reading',
+          icon: '📖',
+          category: 'Growth',
+          unit: 'pages',
+          target: 20,
+          step: 5,
+          type: 'counter',
+          enabled: true,
+          u1Value: 20,
+          u2Value: 15
+        },
+        {
+          id: 'vitamins',
+          name: 'Vitamins',
+          icon: '💊',
+          category: 'Health',
+          unit: 'dose',
+          target: 1,
+          step: 1,
+          type: 'boolean',
+          enabled: true,
+          u1Value: 1,
+          u2Value: 1
+        }
+      ],
+      feed: [
+        { id: 1, user: 'u2', text: 'Partner completed daily hydration! 💧', time: '14m ago', emoji: '💧' },
+        { id: 2, user: 'u1', text: 'Daily Workout session crushed! 🏋️', time: '42m ago', emoji: '💪' },
+        { id: 3, user: 'u2', text: 'High-Five exchanged in pod!', time: '1h ago', emoji: '✋' },
+        { id: 4, user: 'u1', text: 'Logged 15 mins of mindful meditation 🧘', time: '2h ago', emoji: '✨' }
+      ]
+    };
+
+    let state = loadState();
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('POD7_DUO_ACCOUNTABILITY_V4');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          // Normalize branding and pod code to FOCUS / ZAU8PP
+          if (!parsed.branding || parsed.branding.name === 'POD7' || !parsed.branding.name) {
+            parsed.branding = { name: 'FOCUS' };
+          }
+          if (!parsed.pod || parsed.pod.code === 'POD77X') {
+            parsed.pod = parsed.pod || {};
+            parsed.pod.code = 'ZAU8PP';
+            parsed.pod.lockedCodes = ['ZAU8PP'];
+          }
+          if (parsed.users) {
+            if (parsed.users.u1 && (parsed.users.u1.name === 'Ced' || !parsed.users.u1.name)) parsed.users.u1.name = 'You';
+            if (parsed.users.u2 && (parsed.users.u2.name === 'Maya' || !parsed.users.u2.name)) parsed.users.u2.name = 'Partner';
+          }
+          // Default to dark theme for minimalist black
+          parsed.theme = parsed.theme || 'dark';
+          return { ...initialAppState, ...parsed, branding: { ...initialAppState.branding, ...(parsed.branding || {}) }, pod: { ...initialAppState.pod, ...(parsed.pod || {}) } };
+        }
+      } catch (e) {
+        console.error('Error loading state from localStorage:', e);
+      }
+      return JSON.parse(JSON.stringify(initialAppState));
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.error('Error saving state:', e);
+      }
+    }
+
+    function resetDemoData() {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem('POD7_DUO_ACCOUNTABILITY_V4');
+      state = JSON.parse(JSON.stringify(initialAppState));
+      saveState();
+      applyBranding();
+      applyColors();
+      applyTheme();
+      renderAll();
+      closeSettingsModal();
+      showToast('Reset to clean FOCUS defaults!');
+    }
+
+    /* Helper: hex to rgba */
+    function hexToRgba(hex, alpha = 1) {
+      if (!hex) return `rgba(16, 185, 129, ${alpha})`;
+      let c = hex.replace('#', '');
+      if (c.length === 3) c = c.split('').map(x => x + x).join('');
+      const num = parseInt(c, 16);
+      if (isNaN(num)) return `rgba(16, 185, 129, ${alpha})`;
+      const r = (num >> 16) & 255;
+      const g = (num >> 8) & 255;
+      const b = num & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /* =========================================================================
+       2. WEB AUDIO SYNTHESIZER SOUND ENGINE (APPLE TAPTIC BOUNCES)
+       ========================================================================= */
+    let audioCtx = null;
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioClass) audioCtx = new AudioClass();
+      }
+    }
+
+    function playTactileHaptic(type = 'pop') {
+      if (!state.soundEnabled) return;
+      try {
+        initAudioContext();
+        if (!audioCtx) return;
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+
+        const now = audioCtx.currentTime;
+
+        if (type === 'pop' || type === 'tap') {
+          // Tactile physical bounce: quick decaying thud + crisp transient
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(170, now);
+          osc.frequency.exponentialRampToValueAtTime(45, now + 0.045);
+          gain.gain.setValueAtTime(0.24, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.045);
+
+          // Micro transient click
+          const clickOsc = audioCtx.createOscillator();
+          const clickGain = audioCtx.createGain();
+          clickOsc.type = 'triangle';
+          clickOsc.frequency.setValueAtTime(920, now);
+          clickGain.gain.setValueAtTime(0.09, now);
+          clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.015);
+          clickOsc.connect(clickGain);
+          clickGain.connect(audioCtx.destination);
+          clickOsc.start(now);
+          clickOsc.stop(now + 0.015);
+
+        } else if (type === 'double-bounce' || type === 'chime') {
+          // Double bounce + celebratory chord
+          const osc1 = audioCtx.createOscillator();
+          const gain1 = audioCtx.createGain();
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(190, now);
+          gain1.gain.setValueAtTime(0.22, now);
+          gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+          osc1.connect(gain1);
+          gain1.connect(audioCtx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.035);
+
+          const osc2 = audioCtx.createOscillator();
+          const gain2 = audioCtx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(280, now + 0.045);
+          gain2.gain.setValueAtTime(0.25, now + 0.045);
+          gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+          osc2.connect(gain2);
+          gain2.connect(audioCtx.destination);
+          osc2.start(now + 0.045);
+          osc2.stop(now + 0.12);
+
+          // Harmonic shimmer
+          const chord = [523.25, 659.25, 783.99, 1046.50];
+          chord.forEach((freq, idx) => {
+            const cOsc = audioCtx.createOscillator();
+            const cGain = audioCtx.createGain();
+            cOsc.type = 'sine';
+            cOsc.frequency.setValueAtTime(freq, now + 0.08 + idx * 0.04);
+            cGain.gain.setValueAtTime(0.07, now + 0.08 + idx * 0.04);
+            cGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+            cOsc.connect(cGain);
+            cGain.connect(audioCtx.destination);
+            cOsc.start(now + 0.08 + idx * 0.04);
+            cOsc.stop(now + 0.5);
+          });
+
+        } else if (type === 'alert') {
+          // Warning tone for capacity limit
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(320, now);
+          osc.frequency.setValueAtTime(240, now + 0.08);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.25);
+
+        } else if (type === 'switch') {
+          // Subtle tab switch tone
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(380, now);
+          osc.frequency.exponentialRampToValueAtTime(520, now + 0.035);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 0.035);
+        }
+      } catch (err) {
+        console.warn('Audio synthesis note:', err);
+      }
+    }
+
+    function toggleSound(enabled) {
+      state.soundEnabled = enabled;
+      saveState();
+      if (enabled) playTactileHaptic('pop');
+    }
+
+    /* =========================================================================
+       3. FLUID WAVE RIPPLE EXPANSION
+       ========================================================================= */
+    function triggerFluidRipple(event, color) {
+      const target = event.currentTarget || event.target;
+      if (!target) return;
+
+      const rect = target.getBoundingClientRect();
+      const container = target;
+
+      const ripple = document.createElement('span');
+      ripple.className = 'liquid-wave-ripple';
+
+      const size = Math.max(rect.width, rect.height) * 2.2;
+      ripple.style.width = `${size}px`;
+      ripple.style.height = `${size}px`;
+
+      const clientX = event.clientX !== undefined ? event.clientX : (rect.left + rect.width / 2);
+      const clientY = event.clientY !== undefined ? event.clientY : (rect.top + rect.height / 2);
+
+      ripple.style.left = `${clientX - rect.left}px`;
+      ripple.style.top = `${clientY - rect.top}px`;
+      ripple.style.background = `radial-gradient(circle, ${hexToRgba(color, 0.45)} 0%, ${hexToRgba(color, 0.18)} 42%, transparent 70%)`;
+
+      container.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 750);
+    }
+
+    /* =========================================================================
+       4. MINIMALIST "FOCUS" BRANDING & HEADER ENGINE
+       ========================================================================= */
+    function applyBranding() {
+      const appName = (state.branding.name || 'FOCUS').trim() || 'FOCUS';
+
+      // Header pure white text wordmark
+      const headerTitle = document.getElementById('headerAppName');
+      if (headerTitle) {
+        headerTitle.textContent = appName;
+      }
+
+      // Desktop backdrop branding
+      const desktopTitle = document.getElementById('desktopAppTitle');
+      if (desktopTitle) {
+        desktopTitle.textContent = appName;
+      }
+
+      // Browser document title
+      document.title = `${appName} // 2-Person Accountability`;
+
+      // Update Settings fields
+      const appNameInput = document.getElementById('settingAppNameInput');
+      if (appNameInput && appNameInput !== document.activeElement) {
+        appNameInput.value = appName;
+      }
+    }
+
+    function updateAppDisplayName(val) {
+      const clean = (val || '').trim() || 'FOCUS';
+      state.branding.name = clean;
+      saveState();
+      applyBranding();
+    }
+
+    /* =========================================================================
+       5. DYNAMIC PROFILES & SIGNATURE COLOR PALETTES
+       ========================================================================= */
+    function applyColors() {
+      const root = document.documentElement;
+      const u1 = state.users.u1.color;
+      const u2 = state.users.u2.color;
+
+      root.style.setProperty('--u1-color', u1);
+      root.style.setProperty('--u2-color', u2);
+      root.style.setProperty('--u1-glow', hexToRgba(u1, 0.45));
+      root.style.setProperty('--u2-glow', hexToRgba(u2, 0.45));
+
+      const activeColor = state.activeUser === 'u1' ? u1 : u2;
+      root.style.setProperty('--active-user-color', activeColor);
+
+      // Render color palette swatches in Settings
+      renderColorSwatches('u1', 'u1ColorPalette');
+      renderColorSwatches('u2', 'u2ColorPalette');
+
+      // Update persona switcher pill dots and texts
+      updatePersonaSwitcherUI();
+
+      // Redraw canvas gauge & re-render cards
+      drawGauge();
+      renderHabitCards();
+      renderInsightsTab();
+      renderSoloView();
+    }
+
+    function renderColorSwatches(userId, containerId) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const currentColor = state.users[userId].color;
+
+      container.innerHTML = IOS_PALETTES.map(p => {
+        const isSelected = p.hex.toLowerCase() === currentColor.toLowerCase();
+        return `
+          <button onclick="selectSignatureColor('${userId}', '${p.hex}')" 
+            class="w-7 h-7 rounded-full spring-tap flex items-center justify-center transition-all ${
+              isSelected ? 'ring-2 ring-offset-2 ring-white scale-110 shadow-md ring-offset-black' : 'opacity-80 hover:opacity-100'
+            }" 
+            style="background-color: ${p.hex};" 
+            title="${p.name}">
+            ${isSelected ? '<span class="text-white text-[10px] font-bold">✓</span>' : ''}
+          </button>
+        `;
+      }).join('') + `
+        <!-- Custom native color picker -->
+        <label class="w-7 h-7 rounded-full border border-white/20 flex items-center justify-center cursor-pointer overflow-hidden spring-tap text-[10px] font-bold bg-zinc-900" title="Custom Color">
+          <span>🎨</span>
+          <input type="color" value="${currentColor}" onchange="selectSignatureColor('${userId}', this.value)" class="opacity-0 w-0 h-0 absolute pointer-events-none">
+        </label>
+      `;
+    }
+
+    function selectSignatureColor(userId, hex) {
+      state.users[userId].color = hex;
+      saveState();
+      playTactileHaptic('pop');
+      applyColors();
+      showToast(`${state.users[userId].name}'s signature color updated!`);
+    }
+
+    function updateProfileName(userId, newName) {
+      const clean = (newName || '').trim() || (userId === 'u1' ? 'You' : 'Partner');
+      state.users[userId].name = clean;
+      saveState();
+      updatePersonaSwitcherUI();
+      renderAll();
+    }
+
+    function quickEditUserName(userId) {
+      const current = state.users[userId].name;
+      const label = userId === 'u1' ? 'Your display name' : "Partner's display name";
+      const entered = prompt(`Enter ${label}:`, current);
+      if (entered !== null) {
+        updateProfileName(userId, entered);
+        playTactileHaptic('pop');
+        showToast(`${label} set to "${state.users[userId].name}"!`);
+      }
+    }
+
+    function quickEditCurrentSoloName() {
+      quickEditUserName(state.activeUser);
+    }
+
+    function updatePersonaSwitcherUI() {
+      const u1 = state.users.u1;
+      const u2 = state.users.u2;
+
+      // Pills text
+      const u1Pill = document.getElementById('user1PillName');
+      if (u1Pill) u1Pill.textContent = u1.name;
+
+      const u2Pill = document.getElementById('user2PillName');
+      if (u2Pill) u2Pill.textContent = u2.name;
+
+      // Legend in hero card
+      const leg1 = document.getElementById('legendUser1Name');
+      if (leg1) leg1.textContent = u1.name;
+
+      const leg2 = document.getElementById('legendUser2Name');
+      if (leg2) leg2.textContent = u2.name;
+
+      // Header partner name
+      const headerPartner = document.getElementById('headerPartnerName');
+      if (headerPartner) headerPartner.textContent = u2.name;
+
+      // Simulate button text
+      const simText = document.getElementById('simulateBtnText');
+      if (simText) simText.textContent = `Simulate ${u2.name}`;
+
+      // Active switcher button styling
+      const u1Btn = document.getElementById('user1Btn');
+      const u2Btn = document.getElementById('user2Btn');
+      const isU1 = state.activeUser === 'u1';
+
+      if (isU1) {
+        u1Btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold spring-tap flex items-center gap-1.5 bg-zinc-800 text-white shadow-sm border border-white/10';
+        u1Btn.style.color = u1.color;
+        u2Btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold spring-tap flex items-center gap-1.5 text-zinc-400 hover:text-white';
+        u2Btn.style.color = '';
+      } else {
+        u2Btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold spring-tap flex items-center gap-1.5 bg-zinc-800 text-white shadow-sm border border-white/10';
+        u2Btn.style.color = u2.color;
+        u1Btn.className = 'px-2.5 py-1 rounded-lg text-xs font-semibold spring-tap flex items-center gap-1.5 text-zinc-400 hover:text-white';
+        u1Btn.style.color = '';
+      }
+
+      // Settings inputs sync
+      const sU1 = document.getElementById('settingU1NameInput');
+      if (sU1 && sU1 !== document.activeElement) sU1.value = u1.name;
+
+      const sU2 = document.getElementById('settingU2NameInput');
+      if (sU2 && sU2 !== document.activeElement) sU2.value = u2.name;
+
+      // Desktop helpers
+      const dU1 = document.getElementById('desktopUser1Label');
+      if (dU1) dU1.textContent = u1.name;
+      const dU2 = document.getElementById('desktopUser2Label');
+      if (dU2) dU2.textContent = u2.name;
+    }
+
+    /* =========================================================================
+       6. STRICT SINGLE-USE / 1-TO-1 POD CODE BINDING ("ZAU8PP" style)
+       ========================================================================= */
+    function checkPodCapacityLock() {
+      // True if already bound 1/1
+      return state.pod.status === 'paired';
+    }
+
+    function renderPodStatusModalUI() {
+      const statusCard = document.getElementById('podModalStatusCard');
+      const codeBadge = document.getElementById('podCodeStateBadge');
+      const displayCode = document.getElementById('displayPodCode');
+      const unpairSection = document.getElementById('modalUnpairSection');
+      const headerBadge = document.getElementById('headerPodLockBadge');
+      const headerCode = document.getElementById('headerPodCode');
+      const settingsBadge = document.getElementById('settingsPodBadge');
+      const settingsCode = document.getElementById('settingsPodCodeVal');
+      const settingsTitle = document.getElementById('settingsPairingTitle');
+
+      const isPaired = state.pod.status === 'paired';
+      const code = state.pod.code || 'ZAU8PP';
+      const partner = state.users.u2.name || 'Partner';
+
+      if (displayCode) displayCode.textContent = code;
+      if (headerCode) headerCode.textContent = code;
+      if (settingsCode) settingsCode.textContent = code;
+
+      if (isPaired) {
+        if (codeBadge) {
+          codeBadge.textContent = 'LOCKED / PAIRED';
+          codeBadge.className = 'px-2 py-0.5 rounded-full font-bold bg-rose-950/80 text-rose-300 border border-rose-800/60 font-mono text-[10px]';
+        }
+        if (headerBadge) {
+          headerBadge.textContent = '🔒 1/1 LOCKED';
+          headerBadge.className = 'text-[8px] px-1 py-0.2 rounded-full font-mono font-bold bg-rose-950/80 text-rose-400 border border-rose-800/50';
+        }
+        if (settingsBadge) {
+          settingsBadge.textContent = 'LOCKED (1/1 Paired)';
+          settingsBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-950 text-rose-400 border border-rose-800/60 font-mono';
+        }
+        if (settingsTitle) settingsTitle.textContent = `Paired with ${partner}`;
+
+        if (statusCard) {
+          statusCard.className = 'p-4 rounded-2xl bg-emerald-950/30 border border-emerald-800/60 space-y-1.5';
+          statusCard.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Active 1-to-1 Duo Pod</span>
+              </span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-900/80 text-emerald-200 border border-emerald-700/60 font-bold">1 / 1 Paired</span>
+            </div>
+            <p class="text-xs text-zinc-300 leading-relaxed">
+              Locked with <strong>${escapeHtml(partner)}</strong>. Single-use code <strong>${code}</strong> is currently active and capacity is full.
+            </p>
+          `;
+        }
+
+        if (unpairSection) unpairSection.classList.remove('hidden');
+      } else {
+        if (codeBadge) {
+          codeBadge.textContent = 'OPEN (0/1)';
+          codeBadge.className = 'px-2 py-0.5 rounded-full font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 font-mono text-[10px]';
+        }
+        if (headerBadge) {
+          headerBadge.textContent = '🔓 0/1 OPEN';
+          headerBadge.className = 'text-[8px] px-1 py-0.2 rounded-full font-mono font-bold bg-amber-950/80 text-amber-400 border border-amber-800/50';
+        }
+        if (settingsBadge) {
+          settingsBadge.textContent = 'OPEN (0/1 Paired)';
+          settingsBadge.className = 'text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-800/60 font-mono';
+        }
+        if (settingsTitle) settingsTitle.textContent = 'Waiting for partner to pair';
+
+        if (statusCard) {
+          statusCard.className = 'p-4 rounded-2xl bg-amber-950/30 border border-amber-800/60 space-y-1.5';
+          statusCard.innerHTML = `
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span>Unpaired / Open Slot</span>
+              </span>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-900/80 text-amber-200 border border-amber-700/60 font-bold">0 / 1 Paired</span>
+            </div>
+            <p class="text-xs text-zinc-300 leading-relaxed">
+              Share code <strong>${code}</strong> with your accountability partner, or enter their invite code below to lock in.
+            </p>
+          `;
+        }
+
+        if (unpairSection) unpairSection.classList.add('hidden');
+      }
+    }
+
+    function handleJoinPodSubmit() {
+      const codeInput = document.getElementById('inviteCodeInput');
+      const nameInput = document.getElementById('partnerNameInput');
+      const enteredCode = (codeInput.value || '').trim().toUpperCase();
+      const partnerName = (nameInput.value || '').trim() || 'Partner';
+
+      if (enteredCode.length !== 6) {
+        showToast('Please enter a valid 6-character code');
+        if (codeInput) codeInput.classList.add('animate-shake');
+        setTimeout(() => codeInput && codeInput.classList.remove('animate-shake'), 400);
+        return;
+      }
+
+      // CAPACITY ENFORCEMENT:
+      // If pod is already paired OR entered code is in lockedCodes list:
+      const isAlreadyPaired = state.pod.status === 'paired';
+      const isCodeLocked = (state.pod.lockedCodes || []).includes(enteredCode);
+
+      if (isAlreadyPaired || isCodeLocked) {
+        // Trigger required alert: "Pod is at full capacity (1/1 Partner paired)"
+        playTactileHaptic('alert');
+        showCapacityAlertModal(`Pod is at full capacity (1/1 Partner paired). Code "${enteredCode}" cannot be reused because only 1 partner can be bound.`);
+        return;
+      }
+
+      // Successful Pair Transition:
+      state.pod.code = enteredCode;
+      state.pod.status = 'paired';
+      if (!state.pod.lockedCodes) state.pod.lockedCodes = [];
+      state.pod.lockedCodes.push(enteredCode);
+      state.users.u2.name = partnerName;
+      saveState();
+
+      closePodModal();
+      playTactileHaptic('double-bounce');
+      triggerConfetti();
+      showToast(`Successfully paired with ${partnerName}! Pod ${enteredCode} LOCKED.`);
+      logFeed(`Locked into Pod ${enteredCode} with ${partnerName}! 🤝`, '🤝');
+
+      renderAll();
+    }
+
+    function showCapacityAlertModal(msg) {
+      const modal = document.getElementById('capacityAlertModal');
+      const text = document.getElementById('capacityAlertMsg');
+      if (text) text.textContent = msg || 'Pod is at full capacity (1/1 Partner paired).';
+      if (modal) modal.classList.remove('hidden');
+      console.warn('Pod capacity limit reached: Pod is at full capacity (1/1 Partner paired)');
+    }
+
+    function closeCapacityAlert() {
+      const modal = document.getElementById('capacityAlertModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // Explicit "Unpair / Disconnect" button
+    function unpairPodAction() {
+      const partnerName = state.users.u2.name || 'Partner';
+      if (confirm(`Unpair from ${partnerName}? This will disconnect your partner and release pod code ${state.pod.code}.`)) {
+        // Release code
+        const oldCode = state.pod.code;
+        state.pod.status = 'unpaired';
+        state.pod.lockedCodes = (state.pod.lockedCodes || []).filter(c => c !== oldCode);
+        state.users.u2.name = 'Partner';
+        saveState();
+
+        playTactileHaptic('pop');
+        showToast(`Pod unpaired. Invite code ${oldCode} released.`);
+        logFeed(`Pod code ${oldCode} released. Ready for a new partner. 🔓`, '🔓');
+
+        closePodModal();
+        closeSettingsModal();
+        renderAll();
+      }
+    }
+
+    function generateNewPodCode() {
+      if (state.pod.status === 'paired') {
+        showToast('Disconnect partner first to generate a new pod code');
+        return;
+      }
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let newCode = '';
+      for (let i = 0; i < 6; i++) {
+        newCode += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      state.pod.code = newCode;
+      saveState();
+      playTactileHaptic('switch');
+      renderPodStatusModalUI();
+      showToast(`New 6-character code generated: ${newCode}`);
+    }
+
+    function copyPodCode() {
+      const code = state.pod.code || 'ZAU8PP';
+      navigator.clipboard.writeText(code).then(() => {
+        playTactileHaptic('pop');
+        showToast(`Pod Code ${code} copied to clipboard! 📋`);
+      }).catch(() => {
+        showToast(`Pod Code: ${code}`);
+      });
+    }
+
+    /* =========================================================================
+       7. THEME & LIVE CLOCK ENGINE (MINIMALIST BLACK DEFAULT)
+       ========================================================================= */
+    function applyTheme() {
+      const html = document.documentElement;
+      const themeIcon = document.getElementById('themeIcon');
+      if (state.theme === 'dark') {
+        html.classList.add('dark');
+        html.classList.remove('light');
+        if (themeIcon) themeIcon.textContent = '☀️';
+      } else {
+        html.classList.remove('dark');
+        html.classList.add('light');
+        if (themeIcon) themeIcon.textContent = '🌙';
+      }
+    }
+
+    function toggleDarkMode() {
+      state.theme = state.theme === 'dark' ? 'light' : 'dark';
+      saveState();
+      applyTheme();
+      drawGauge();
+      playTactileHaptic('switch');
+      showToast(state.theme === 'dark' ? 'Minimalist Black activated' : 'Light Mode activated');
+    }
+
+    function updateLiveClock() {
+      const clockEl = document.getElementById('liveClock');
+      if (!clockEl) return;
+      const now = new Date();
+      clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    }
+
+    setInterval(updateLiveClock, 1000);
+    updateLiveClock();
+
+    /* =========================================================================
+       8. HERO DUAL-ARC CANVAS GAUGE (SEMI-CIRCLE DOT-MATRIX)
+       ========================================================================= */
+    let animU1 = 0.75;
+    let animU2 = 0.50;
+    let targetU1 = 0.75;
+    let targetU2 = 0.50;
+    let isAnimatingGauge = false;
+
+    function getScores() {
+      const activeGoals = state.goals.filter(g => g.enabled);
+      if (activeGoals.length === 0) {
+        return { u1Pct: 0, u2Pct: 0, combinedPct: 0, u1Count: '0/0', u2Count: '0/0', u1Ratio: 0, u2Ratio: 0 };
+      }
+
+      let u1Completed = 0;
+      let u2Completed = 0;
+      let u1TotalRatio = 0;
+      let u2TotalRatio = 0;
+
+      activeGoals.forEach(g => {
+        const r1 = Math.min(1, Math.max(0, (g.u1Value || 0) / g.target));
+        const r2 = Math.min(1, Math.max(0, (g.u2Value || 0) / g.target));
+        u1TotalRatio += r1;
+        u2TotalRatio += r2;
+        if (r1 >= 1) u1Completed++;
+        if (r2 >= 1) u2Completed++;
+      });
+
+      const u1Pct = Math.round((u1TotalRatio / activeGoals.length) * 100);
+      const u2Pct = Math.round((u2TotalRatio / activeGoals.length) * 100);
+      const combinedPct = Math.round((u1Pct + u2Pct) / 2);
+
+      return {
+        u1Pct,
+        u2Pct,
+        combinedPct,
+        u1Count: `(${u1Completed}/${activeGoals.length})`,
+        u2Count: `(${u2Completed}/${activeGoals.length})`,
+        u1Ratio: u1TotalRatio / activeGoals.length,
+        u2Ratio: u2TotalRatio / activeGoals.length,
+      };
+    }
+
+    function setupGaugeCanvas() {
+      const canvas = document.getElementById('gaugeCanvas');
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      
+      const width = rect.width || 320;
+      const height = rect.height || 175;
+
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+    }
+
+    function drawGauge() {
+      const canvas = document.getElementById('gaugeCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      const width = canvas.width / dpr;
+      const height = canvas.height / dpr;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const isDark = state.theme === 'dark';
+      // In pitch-black AMOLED mode, inactive dots are deep slate #1a2233
+      const inactiveDotColor = isDark ? '#1a2233' : '#e2e8f0';
+
+      const cx = width / 2;
+      const cy = height - 12;
+
+      // 1. OUTER ARC (USER 1 - DYNAMIC COLOR)
+      const rOuter = Math.min(cx - 16, 136);
+      const outerDots = 36;
+      const angleStart = Math.PI + 0.08;
+      const angleEnd = 2 * Math.PI - 0.08;
+      const angleSpan = angleEnd - angleStart;
+
+      const u1Color = state.users.u1.color || '#10b981';
+      const u2Color = state.users.u2.color || '#ff6b4a';
+
+      for (let i = 0; i < outerDots; i++) {
+        const t = i / (outerDots - 1);
+        const theta = angleStart + t * angleSpan;
+        const x = cx + rOuter * Math.cos(theta);
+        const y = cy + rOuter * Math.sin(theta);
+
+        const isActive = t <= animU1;
+        ctx.beginPath();
+        const dotRadius = isActive ? 3.8 : 2.5;
+        ctx.arc(x, y, dotRadius, 0, 2 * Math.PI);
+
+        if (isActive) {
+          ctx.fillStyle = u1Color;
+          ctx.shadowColor = hexToRgba(u1Color, 0.85);
+          ctx.shadowBlur = 9;
+        } else {
+          ctx.fillStyle = inactiveDotColor;
+          ctx.shadowBlur = 0;
+        }
+        ctx.fill();
+      }
+
+      // 2. INNER ARC (USER 2 - DYNAMIC COLOR)
+      const rInner = rOuter - 22;
+      const innerDots = 30;
+
+      for (let j = 0; j < innerDots; j++) {
+        const t = j / (innerDots - 1);
+        const theta = angleStart + t * angleSpan;
+        const x = cx + rInner * Math.cos(theta);
+        const y = cy + rInner * Math.sin(theta);
+
+        const isActive = t <= animU2;
+        ctx.beginPath();
+        const dotRadius = isActive ? 3.8 : 2.4;
+        ctx.arc(x, y, dotRadius, 0, 2 * Math.PI);
+
+        if (isActive) {
+          ctx.fillStyle = u2Color;
+          ctx.shadowColor = hexToRgba(u2Color, 0.85);
+          ctx.shadowBlur = 9;
+        } else {
+          ctx.fillStyle = inactiveDotColor;
+          ctx.shadowBlur = 0;
+        }
+        ctx.fill();
+      }
+
+      ctx.shadowBlur = 0;
+    }
+
+    function animateGaugeLoop() {
+      const step = 0.04;
+      let needsRedraw = false;
+
+      if (Math.abs(animU1 - targetU1) > 0.005) {
+        animU1 += (targetU1 - animU1) * step;
+        needsRedraw = true;
+      } else {
+        animU1 = targetU1;
+      }
+
+      if (Math.abs(animU2 - targetU2) > 0.005) {
+        animU2 += (targetU2 - animU2) * step;
+        needsRedraw = true;
+      } else {
+        animU2 = targetU2;
+      }
+
+      if (needsRedraw) {
+        drawGauge();
+        requestAnimationFrame(animateGaugeLoop);
+      } else {
+        drawGauge();
+        isAnimatingGauge = false;
+      }
+    }
+
+    function updateGaugeWithScores(scores) {
+      targetU1 = scores.u1Ratio;
+      targetU2 = scores.u2Ratio;
+
+      if (!isAnimatingGauge) {
+        isAnimatingGauge = true;
+        requestAnimationFrame(animateGaugeLoop);
+      }
+
+      const heroCombinedEl = document.getElementById('heroCombinedPct');
+      if (heroCombinedEl) heroCombinedEl.textContent = scores.combinedPct;
+
+      const u1PctText = document.getElementById('u1PctText');
+      if (u1PctText) u1PctText.textContent = `${scores.u1Pct}%`;
+
+      const u1GoalsCount = document.getElementById('u1GoalsCount');
+      if (u1GoalsCount) u1GoalsCount.textContent = scores.u1Count;
+
+      const u2PctText = document.getElementById('u2PctText');
+      if (u2PctText) u2PctText.textContent = `${scores.u2Pct}%`;
+
+      const u2GoalsCount = document.getElementById('u2GoalsCount');
+      if (u2GoalsCount) u2GoalsCount.textContent = scores.u2Count;
+
+      // Delta comparison
+      const delta = scores.combinedPct - state.pod.yesterdayPct;
+      const deltaBadge = document.getElementById('deltaBadge');
+      if (deltaBadge) {
+        if (delta >= 0) {
+          deltaBadge.textContent = `+${delta}% ▲`;
+          deltaBadge.className = 'font-bold text-emerald-400 font-mono';
+        } else {
+          deltaBadge.textContent = `${delta}% ▼`;
+          deltaBadge.className = 'font-bold text-rose-400 font-mono';
+        }
+      }
+
+      // Leaderboard banner with dynamic names
+      const leadStatusText = document.getElementById('leadStatusText');
+      if (leadStatusText) {
+        const u1Name = state.users.u1.name;
+        const u2Name = state.users.u2.name;
+        if (scores.u1Pct > scores.u2Pct) {
+          leadStatusText.textContent = `${u1Name} is leading by ${scores.u1Pct - scores.u2Pct}%`;
+        } else if (scores.u2Pct > scores.u1Pct) {
+          leadStatusText.textContent = `${u2Name} is leading by ${scores.u2Pct - scores.u1Pct}%`;
+        } else {
+          leadStatusText.textContent = `⚡ Both in exact sync at ${scores.u1Pct}%!`;
+        }
+      }
+
+      // Sunday bar in Insights Tab
+      const chartSunU1 = document.getElementById('chartSunU1');
+      if (chartSunU1) chartSunU1.style.height = `${Math.max(10, scores.u1Pct)}%`;
+      const chartSunU2 = document.getElementById('chartSunU2');
+      if (chartSunU2) chartSunU2.style.height = `${Math.max(10, scores.u2Pct)}%`;
+
+      // Solo Progress
+      const soloPct = state.activeUser === 'u1' ? scores.u1Pct : scores.u2Pct;
+      const soloScorePct = document.getElementById('soloScorePct');
+      if (soloScorePct) soloScorePct.textContent = `${soloPct}%`;
+      const soloProgressBar = document.getElementById('soloProgressBar');
+      if (soloProgressBar) soloProgressBar.style.width = `${soloPct}%`;
+    }
+
+    /* =========================================================================
+       9. HABIT CARDS & TACTILE RIPPLE CHECK-INS
+       ========================================================================= */
+    function renderHabitCards() {
+      const container = document.getElementById('habitCardsContainer');
+      if (!container) return;
+
+      const activeGoals = state.goals.filter(g => g.enabled);
+      const activeCountBadge = document.getElementById('activeGoalsCountBadge');
+      if (activeCountBadge) activeCountBadge.textContent = `${activeGoals.length} Active`;
+
+      if (activeGoals.length === 0) {
+        container.innerHTML = `
+          <div class="p-8 text-center liquid-card rounded-3xl border border-dashed border-white/20">
+            <span class="text-3xl mb-2 block">🎯</span>
+            <p class="text-sm font-bold text-zinc-200">No active goals yet</p>
+            <p class="text-xs text-zinc-400 mb-4">Add your daily habits from presets</p>
+            <button onclick="openGoalPickerDrawer()" class="px-4 py-2 rounded-xl text-white font-bold text-xs shadow-sm spring-tap" style="background-color: var(--u1-color);">
+              + Choose Habits
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const isU1Active = state.activeUser === 'u1';
+      const activeUser = isU1Active ? state.users.u1 : state.users.u2;
+      const partnerUser = isU1Active ? state.users.u2 : state.users.u1;
+
+      const u1Color = state.users.u1.color || '#10b981';
+      const u2Color = state.users.u2.color || '#ff6b4a';
+      const activeColor = activeUser.color;
+
+      container.innerHTML = activeGoals.map(goal => {
+        const u1Val = goal.u1Value || 0;
+        const u2Val = goal.u2Value || 0;
+        const target = goal.target;
+
+        const u1Pct = Math.min(100, Math.round((u1Val / target) * 100));
+        const u2Pct = Math.min(100, Math.round((u2Val / target) * 100));
+
+        const u1Done = u1Pct >= 100;
+        const u2Done = u2Pct >= 100;
+
+        const myVal = isU1Active ? u1Val : u2Val;
+        const myDone = isU1Active ? u1Done : u2Done;
+
+        // Status badge
+        let badgeHtml = '';
+        if (u1Done && u2Done) {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold border" style="background-color: rgba(16, 185, 129, 0.15); color: ${u1Color}; border-color: rgba(16, 185, 129, 0.3);">Both Done! ✨</span>`;
+        } else if (u1Val > u2Val) {
+          badgeHtml = `<span class="text-[10px] font-semibold" style="color: ${u1Color};">${escapeHtml(state.users.u1.name)} ahead</span>`;
+        } else if (u2Val > u1Val) {
+          badgeHtml = `<span class="text-[10px] font-semibold" style="color: ${u2Color};">${escapeHtml(state.users.u2.name)} ahead</span>`;
+        } else {
+          badgeHtml = `<span class="text-[10px] font-semibold text-zinc-400">Tied</span>`;
+        }
+
+        // Action controls
+        let actionControlsHtml = '';
+        if (goal.type === 'boolean') {
+          actionControlsHtml = `
+            <button onclick="handleCheckinBoolean(event, '${goal.id}')" class="px-3.5 py-1.5 rounded-xl font-bold text-xs spring-tap flex items-center gap-1.5 ${
+              myDone 
+                ? 'text-white shadow-md' 
+                : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-white/10'
+            }" style="${myDone ? `background-color: ${activeColor}; box-shadow: 0 4px 14px ${hexToRgba(activeColor, 0.45)};` : ''}">
+              <span>${myDone ? '✓ Completed' : 'Check Off'}</span>
+            </button>
+          `;
+        } else {
+          actionControlsHtml = `
+            <div class="flex items-center gap-1">
+              <button onclick="handleCheckinStep(event, '${goal.id}', -${goal.step})" class="w-7 h-7 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700 font-bold text-xs flex items-center justify-center spring-tap border border-white/10">
+                -
+              </button>
+              <button onclick="handleCheckinStep(event, '${goal.id}', ${goal.step})" class="px-3 py-1.5 rounded-xl font-bold text-xs spring-tap flex items-center gap-1 ${
+                myDone ? 'text-white shadow-md' : 'bg-white text-zinc-900 hover:bg-zinc-100'
+              }" style="${myDone ? `background-color: ${activeColor}; box-shadow: 0 4px 14px ${hexToRgba(activeColor, 0.45)};` : ''}">
+                <span class="font-mono">+${goal.step.toLocaleString()}</span>
+                <span class="text-[10px] opacity-80">${goal.unit}</span>
+              </button>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="liquid-card rounded-2xl p-4 space-y-3 transition-all">
+            
+            <!-- Card Header: Icon, Name, Target, Status Badge -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <span class="text-2xl">${goal.icon}</span>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <h4 class="font-extrabold text-sm text-white">${goal.name}</h4>
+                    ${badgeHtml}
+                  </div>
+                  <span class="text-[11px] text-zinc-400 font-mono">
+                    Target: ${goal.target.toLocaleString()} ${goal.unit}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Quick Action For Current User -->
+              <div class="flex items-center gap-1.5">
+                ${actionControlsHtml}
+              </div>
+            </div>
+
+            <!-- Concentric Dual Mini-Rings & Side-By-Side Comparison Bars -->
+            <div class="flex items-center gap-3 pt-1">
+              
+              <!-- Concentric Dual Mini-Rings -->
+              <div class="relative w-12 h-12 shrink-0 flex items-center justify-center">
+                <svg class="w-12 h-12 -rotate-90 transform" viewBox="0 0 44 44">
+                  <!-- Background Tracks -->
+                  <circle cx="22" cy="22" r="18" stroke="#1e2638" stroke-width="3" fill="none" />
+                  <circle cx="22" cy="22" r="12" stroke="#1e2638" stroke-width="3" fill="none" />
+                  
+                  <!-- Outer Ring: User 1 Dynamic Color -->
+                  <circle cx="22" cy="22" r="18" stroke="${u1Color}" stroke-width="3.2" fill="none" stroke-linecap="round"
+                    stroke-dasharray="113.1" stroke-dashoffset="${(113.1 * (1 - u1Pct / 100)).toFixed(1)}" class="spring-ring" />
+                  
+                  <!-- Inner Ring: User 2 Dynamic Color -->
+                  <circle cx="22" cy="22" r="12" stroke="${u2Color}" stroke-width="3.2" fill="none" stroke-linecap="round"
+                    stroke-dasharray="75.4" stroke-dashoffset="${(75.4 * (1 - u2Pct / 100)).toFixed(1)}" class="spring-ring" />
+                </svg>
+                <span class="absolute text-[8px] font-mono font-bold text-zinc-400">DUO</span>
+              </div>
+
+              <!-- Dynamic Comparison Bars with Apple Spring Transitions -->
+              <div class="flex-1 space-y-1.5">
+                <!-- User 1 Bar -->
+                <div class="space-y-0.5">
+                  <div class="flex justify-between text-[11px] font-semibold">
+                    <span class="flex items-center gap-1.5 text-zinc-300">
+                      <span class="w-2 h-2 rounded-full" style="background-color: ${u1Color};"></span>
+                      <span class="truncate max-w-[90px]">${escapeHtml(state.users.u1.name)}</span>
+                    </span>
+                    <span class="font-mono text-[10px] ${u1Done ? 'font-bold' : 'text-zinc-400'}" style="${u1Done ? `color: ${u1Color};` : ''}">
+                      ${u1Val.toLocaleString()} / ${goal.target.toLocaleString()} ${goal.unit} (${u1Pct}%)
+                    </span>
+                  </div>
+                  <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full spring-progress" style="width: ${u1Pct}%; background-color: ${u1Color};"></div>
+                  </div>
+                </div>
+
+                <!-- User 2 Bar -->
+                <div class="space-y-0.5">
+                  <div class="flex justify-between text-[11px] font-semibold">
+                    <span class="flex items-center gap-1.5 text-zinc-300">
+                      <span class="w-2 h-2 rounded-full" style="background-color: ${u2Color};"></span>
+                      <span class="truncate max-w-[90px]">${escapeHtml(state.users.u2.name)}</span>
+                    </span>
+                    <span class="font-mono text-[10px] ${u2Done ? 'font-bold' : 'text-zinc-400'}" style="${u2Done ? `color: ${u2Color};` : ''}">
+                      ${u2Val.toLocaleString()} / ${goal.target.toLocaleString()} ${goal.unit} (${u2Pct}%)
+                    </span>
+                  </div>
+                  <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full spring-progress" style="width: ${u2Pct}%; background-color: ${u2Color};"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Footer: Nudge / Reaction -->
+            <div class="flex items-center justify-between pt-1 border-t border-white/[0.08] text-[11px] text-zinc-400">
+              <span class="text-[10px]">Tap to check-in for <strong class="text-zinc-200">${escapeHtml(activeUser.name)}</strong></span>
+              <button onclick="nudgeOnHabit('${goal.name}')" class="text-xs font-semibold hover:underline flex items-center gap-1 spring-subtle" style="color: ${activeColor};">
+                <span>⚡ Nudge ${escapeHtml(partnerUser.name)}</span>
+              </button>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleCheckinStep(event, goalId, delta) {
+      const activeColor = state.activeUser === 'u1' ? state.users.u1.color : state.users.u2.color;
+      triggerFluidRipple(event, activeColor);
+      adjustGoalValue(goalId, delta);
+    }
+
+    function handleCheckinBoolean(event, goalId) {
+      const activeColor = state.activeUser === 'u1' ? state.users.u1.color : state.users.u2.color;
+      triggerFluidRipple(event, activeColor);
+      toggleBooleanGoal(goalId);
+    }
+
+    function adjustGoalValue(goalId, delta) {
+      const goal = state.goals.find(g => g.id === goalId);
+      if (!goal) return;
+
+      const isU1 = state.activeUser === 'u1';
+      const prevVal = isU1 ? goal.u1Value : goal.u2Value;
+      let newVal = Math.max(0, Number((prevVal + delta).toFixed(1)));
+
+      if (isU1) goal.u1Value = newVal;
+      else goal.u2Value = newVal;
+
+      saveState();
+      playTactileHaptic('pop');
+
+      // Check if newly hit 100%
+      if (newVal >= goal.target && prevVal < goal.target) {
+        playTactileHaptic('double-bounce');
+        triggerConfetti();
+        const userName = isU1 ? state.users.u1.name : state.users.u2.name;
+        showToast(`${userName} reached 100% on ${goal.name}! 🎉`);
+        logFeed(`${userName} reached ${goal.name} target! 🎯`, goal.icon);
+      }
+
+      renderHabitCards();
+      const scores = getScores();
+      updateGaugeWithScores(scores);
+    }
+
+    function toggleBooleanGoal(goalId) {
+      const goal = state.goals.find(g => g.id === goalId);
+      if (!goal) return;
+
+      const isU1 = state.activeUser === 'u1';
+      const currentVal = isU1 ? goal.u1Value : goal.u2Value;
+      const newVal = currentVal >= 1 ? 0 : 1;
+
+      if (isU1) goal.u1Value = newVal;
+      else goal.u2Value = newVal;
+
+      saveState();
+      playTactileHaptic('pop');
+
+      const userName = isU1 ? state.users.u1.name : state.users.u2.name;
+      if (newVal === 1) {
+        playTactileHaptic('double-bounce');
+        triggerConfetti();
+        showToast(`${userName} completed ${goal.name}! ✓`);
+        logFeed(`${userName} marked ${goal.name} as done! ✓`, goal.icon);
+      } else {
+        showToast(`${userName} unmarked ${goal.name}`);
+      }
+
+      renderHabitCards();
+      const scores = getScores();
+      updateGaugeWithScores(scores);
+    }
+
+    /* =========================================================================
+       10. DUO PERSONA SWITCHER & SIMULATION
+       ========================================================================= */
+    function switchActiveUser(userId) {
+      if (state.activeUser === userId) return;
+      state.activeUser = userId;
+      saveState();
+      playTactileHaptic('switch');
+      applyColors();
+      showToast(`Now logging as ${state.users[userId].name}`);
+    }
+
+    function simulatePartnerActivity() {
+      const activeGoals = state.goals.filter(g => g.enabled);
+      if (activeGoals.length === 0) return;
+
+      const partnerName = state.users.u2.name;
+      const randomGoal = activeGoals[Math.floor(Math.random() * activeGoals.length)];
+      
+      if (randomGoal.type === 'boolean') {
+        randomGoal.u2Value = 1;
+      } else {
+        randomGoal.u2Value = Math.min(randomGoal.target, (randomGoal.u2Value || 0) + randomGoal.step);
+      }
+
+      saveState();
+      playTactileHaptic('pop');
+      triggerConfetti();
+
+      showToast(`⚡ ${partnerName} just checked in on ${randomGoal.name}!`);
+      logFeed(`${partnerName} updated ${randomGoal.name} (+${randomGoal.step} ${randomGoal.unit})`, randomGoal.icon);
+
+      renderHabitCards();
+      const scores = getScores();
+      updateGaugeWithScores(scores);
+    }
+
+    function nudgeOnHabit(habitName) {
+      playTactileHaptic('switch');
+      triggerConfetti();
+      const partnerName = state.activeUser === 'u1' ? state.users.u2.name : state.users.u1.name;
+      showToast(`⚡ Nudge sent to ${partnerName} for ${habitName}!`);
+      logFeed(`Sent a reminder to ${partnerName} for ${habitName} ⚡`, '⚡');
+    }
+
+    function sendNudgeReaction(type) {
+      playTactileHaptic('double-bounce');
+      triggerConfetti();
+      const partnerName = state.activeUser === 'u1' ? state.users.u2.name : state.users.u1.name;
+      showToast(`✋ High-Five sent to ${partnerName}!`);
+      logFeed(`Sent a high-five to ${partnerName}! ✋`, '✋');
+    }
+
+    /* =========================================================================
+       11. LIVE FEED & TOAST ENGINE
+       ========================================================================= */
+    function logFeed(text, emoji = '✨') {
+      state.feed.unshift({
+        id: Date.now(),
+        user: state.activeUser,
+        text,
+        time: 'Just now',
+        emoji
+      });
+      if (state.feed.length > 8) state.feed.pop();
+      saveState();
+      renderFeed();
+    }
+
+    function renderFeed() {
+      const container = document.getElementById('liveActivityFeed');
+      if (!container) return;
+
+      container.innerHTML = state.feed.map(item => `
+        <div class="flex items-center gap-2.5 p-2 rounded-xl bg-zinc-900/60 border border-white/5 text-xs">
+          <span class="text-base">${item.emoji}</span>
+          <div class="flex-1 truncate font-medium text-zinc-300">
+            ${escapeHtml(item.text)}
+          </div>
+          <span class="text-[10px] text-zinc-400 font-mono shrink-0">${item.time}</span>
+        </div>
+      `).join('');
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'px-4 py-2 rounded-full bg-white text-zinc-900 text-xs font-bold shadow-xl backdrop-blur-md transition-all duration-300 transform -translate-y-2 opacity-0 pointer-events-auto flex items-center gap-2';
+      toast.innerHTML = `<span>✨</span><span>${escapeHtml(message)}</span>`;
+
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => {
+        toast.classList.remove('-translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('-translate-y-2', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 2600);
+    }
+
+    /* =========================================================================
+       12. FLOATING CONFETTI / PARTICLES ENGINE
+       ========================================================================= */
+    let confettiParticles = [];
+    let confettiRunning = false;
+
+    function triggerConfetti() {
+      const canvas = document.getElementById('reactionCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const colors = [state.users.u1.color, state.users.u2.color, '#f59e0b', '#3b82f6', '#8b5cf6', '#ffffff'];
+      for (let i = 0; i < 40; i++) {
+        confettiParticles.push({
+          x: rect.width / 2 + (Math.random() - 0.5) * 80,
+          y: rect.height / 2 + (Math.random() - 0.5) * 40,
+          vx: (Math.random() - 0.5) * 8,
+          vy: -Math.random() * 8 - 4,
+          radius: Math.random() * 4 + 2,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 1,
+          decay: Math.random() * 0.02 + 0.015
+        });
+      }
+
+      if (!confettiRunning) {
+        confettiRunning = true;
+        requestAnimationFrame(updateConfetti);
+      }
+    }
+
+    function updateConfetti() {
+      const canvas = document.getElementById('reactionCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const width = canvas.width / dpr;
+      const height = canvas.height / dpr;
+
+      ctx.clearRect(0, 0, width, height);
+
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.25;
+        p.alpha -= p.decay;
+
+        if (p.alpha <= 0) {
+          confettiParticles.splice(i, 1);
+          continue;
+        }
+
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      if (confettiParticles.length > 0) {
+        requestAnimationFrame(updateConfetti);
+      } else {
+        confettiRunning = false;
+        ctx.clearRect(0, 0, width, height);
+      }
+    }
+
+    /* =========================================================================
+       13. SOLO VIEW RENDERER
+       ========================================================================= */
+    function renderSoloView() {
+      const isU1 = state.activeUser === 'u1';
+      const activeUser = isU1 ? state.users.u1 : state.users.u2;
+
+      const soloAvatar = document.getElementById('soloAvatar');
+      if (soloAvatar) soloAvatar.textContent = activeUser.avatar;
+
+      const soloName = document.getElementById('soloName');
+      if (soloName) soloName.textContent = activeUser.name;
+
+      const soloSubtitle = document.getElementById('soloSubtitle');
+      if (soloSubtitle) soloSubtitle.textContent = `Accountability Partner in Pod ${state.pod.code}`;
+
+      const checklistContainer = document.getElementById('soloChecklistContainer');
+      if (!checklistContainer) return;
+
+      const activeGoals = state.goals.filter(g => g.enabled);
+      checklistContainer.innerHTML = activeGoals.map(goal => {
+        const val = isU1 ? goal.u1Value : goal.u2Value;
+        const isDone = val >= goal.target;
+
+        return `
+          <div class="liquid-card flex items-center justify-between p-3 rounded-2xl">
+            <div class="flex items-center gap-3">
+              <span class="text-xl">${goal.icon}</span>
               <div>
-                <span class="preview-label">Generated Username:</span>
-                <code id="preview-username" class="preview-value">--</code>
-                <span class="text-xs text-muted">Full name, lowercase, no spaces</span>
+                <h5 class="text-xs font-bold text-white">${goal.name}</h5>
+                <span class="text-[11px] text-zinc-400 font-mono">${val.toLocaleString()} / ${goal.target.toLocaleString()} ${goal.unit}</span>
               </div>
+            </div>
+            <button onclick="handleSoloCheckin(event, '${goal.id}', ${goal.type === 'boolean' ? 0 : goal.step}, '${goal.type}')" 
+              class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm spring-tap ${
+                isDone ? 'text-white shadow-md' : 'bg-zinc-800 text-zinc-400 border border-white/10'
+              }" style="${isDone ? `background-color: ${activeUser.color};` : ''}">
+              ${isDone ? '✓' : '+'}
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleSoloCheckin(event, goalId, step, type) {
+      const activeColor = state.activeUser === 'u1' ? state.users.u1.color : state.users.u2.color;
+      triggerFluidRipple(event, activeColor);
+      if (type === 'boolean') {
+        toggleBooleanGoal(goalId);
+      } else {
+        adjustGoalValue(goalId, step);
+      }
+      renderSoloView();
+    }
+
+    /* =========================================================================
+       14. INSIGHTS TAB RENDERER
+       ========================================================================= */
+    function renderInsightsTab() {
+      const u1 = state.users.u1;
+      const u2 = state.users.u2;
+
+      const legU1 = document.getElementById('chartLegendU1');
+      if (legU1) legU1.textContent = `${u1.name} (Outer Arc)`;
+
+      const legU2 = document.getElementById('chartLegendU2');
+      if (legU2) legU2.textContent = `${u2.name} (Inner Arc)`;
+
+      const days1 = document.getElementById('daysLedU1');
+      if (days1) days1.textContent = `${u1.name}: 4d`;
+
+      const days2 = document.getElementById('daysLedU2');
+      if (days2) days2.textContent = `${u2.name}: 3d`;
+    }
+
+    /* =========================================================================
+       15. BOTTOM NAVIGATION TABS SWITCHER
+       ========================================================================= */
+    function switchNavTab(tab) {
+      state.activeTab = tab;
+      playTactileHaptic('switch');
+
+      const vTogether = document.getElementById('viewTogether');
+      const vInsights = document.getElementById('viewInsights');
+      const vSolo = document.getElementById('viewSolo');
+
+      const navTogether = document.getElementById('navTogether');
+      const navInsights = document.getElementById('navInsights');
+      const navSolo = document.getElementById('navSolo');
+
+      vTogether.classList.add('hidden');
+      vInsights.classList.add('hidden');
+      vSolo.classList.add('hidden');
+
+      const inactiveNavClasses = 'flex flex-col items-center justify-center flex-1 py-1 rounded-full text-zinc-400 hover:text-white font-semibold transition-all spring-subtle';
+      const activeNavClasses = 'flex flex-col items-center justify-center flex-1 py-1 rounded-full font-bold transition-all spring-subtle';
+
+      navTogether.className = inactiveNavClasses;
+      navInsights.className = inactiveNavClasses;
+      navSolo.className = inactiveNavClasses;
+      navTogether.style.color = '';
+      navInsights.style.color = '';
+      navSolo.style.color = '';
+
+      const u1Color = state.users.u1.color || '#10b981';
+
+      if (tab === 'together') {
+        vTogether.classList.remove('hidden');
+        navTogether.className = activeNavClasses;
+        navTogether.style.color = u1Color;
+        drawGauge();
+      } else if (tab === 'insights') {
+        vInsights.classList.remove('hidden');
+        navInsights.className = activeNavClasses;
+        navInsights.style.color = u1Color;
+        renderInsightsTab();
+      } else if (tab === 'solo') {
+        vSolo.classList.remove('hidden');
+        navSolo.className = activeNavClasses;
+        navSolo.style.color = state.activeUser === 'u1' ? u1Color : state.users.u2.color;
+        renderSoloView();
+      }
+    }
+
+    /* =========================================================================
+       16. MODALS MANAGEMENT
+       ========================================================================= */
+    function openPodModal() {
+      const modal = document.getElementById('podModal');
+      if (modal) modal.classList.remove('hidden');
+      renderPodStatusModalUI();
+    }
+
+    function closePodModal() {
+      const modal = document.getElementById('podModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openSettingsModal(section) {
+      const modal = document.getElementById('settingsModal');
+      if (modal) modal.classList.remove('hidden');
+      renderPodStatusModalUI();
+      if (section === 'branding') {
+        const input = document.getElementById('settingAppNameInput');
+        if (input) setTimeout(() => input.focus(), 200);
+      }
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('settingsModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openStreakModal() {
+      const modal = document.getElementById('streakModal');
+      if (modal) modal.classList.remove('hidden');
+      const sub = document.getElementById('streakModalSubtitle');
+      if (sub) sub.textContent = `${state.users.u1.name} & ${state.users.u2.name} haven't missed a single day!`;
+      playTactileHaptic('double-bounce');
+      triggerConfetti();
+    }
+
+    function closeStreakModal() {
+      const modal = document.getElementById('streakModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function openGoalPickerDrawer() {
+      const modal = document.getElementById('goalPickerModal');
+      if (modal) modal.classList.remove('hidden');
+      renderPresetGoalPicker();
+    }
+
+    function closeGoalPickerDrawer() {
+      const modal = document.getElementById('goalPickerModal');
+      if (modal) modal.classList.add('hidden');
+      renderHabitCards();
+      const scores = getScores();
+      updateGaugeWithScores(scores);
+    }
+
+    function renderPresetGoalPicker() {
+      const container = document.getElementById('presetGoalList');
+      if (!container) return;
+
+      container.innerHTML = defaultPresetLibrary.map(preset => {
+        const existing = state.goals.find(g => g.id === preset.id);
+        const isActive = existing ? existing.enabled : false;
+
+        return `
+          <div class="flex items-center justify-between p-3 rounded-2xl border transition-all ${
+            isActive ? 'bg-zinc-800/90 border-emerald-500/80 shadow-sm' : 'bg-zinc-900 border-white/10'
+          }">
+            <div class="flex items-center gap-3">
+              <span class="text-2xl">${preset.icon}</span>
               <div>
-                <span class="preview-label">Generated Password:</span>
-                <code id="preview-password" class="preview-value">--</code>
-                <span class="text-xs text-muted">DOB numbers only (DDMMYYYY)</span>
+                <h5 class="text-xs font-bold text-white">${preset.name}</h5>
+                <span class="text-[10px] text-zinc-400 font-mono">${preset.category} • Target: ${preset.defaultTarget.toLocaleString()} ${preset.unit}</span>
               </div>
             </div>
+            <button onclick="togglePresetGoal('${preset.id}')" class="px-3 py-1.5 rounded-xl font-bold text-xs spring-tap ${
+              isActive 
+                ? 'text-white shadow-sm' 
+                : 'bg-zinc-800 text-zinc-300 border border-white/10 hover:border-white/20'
+            }" style="${isActive ? `background-color: var(--u1-color);` : ''}">
+              ${isActive ? 'Active ✓' : '+ Add'}
+            </button>
           </div>
+        `;
+      }).join('');
+    }
 
-          <div class="form-group">
-            <label for="member-phone">Phone Number</label>
-            <input type="tel" id="member-phone" class="form-input" placeholder="+91 98620 XXXXX">
-          </div>
-          <div class="form-group">
-            <label for="member-email">Email Address</label>
-            <input type="email" id="member-email" class="form-input" placeholder="member@gmail.com">
-          </div>
-          <div class="form-group">
-            <label for="member-plan">Membership Plan</label>
-            <select id="member-plan" class="form-select">
-              <option value="Standard Monthly">Standard Monthly (₹1,000/mo)</option>
-              <option value="Quarterly Hypertrophy">Quarterly Hypertrophy (₹2,700/3mo)</option>
-              <option value="Half-Yearly Transformation">Half-Yearly Transformation (₹5,000/6mo)</option>
-              <option value="Annual Strength & Conditioning">Annual Strength & Conditioning (₹9,000/yr)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="member-status">Membership Status</label>
-            <select id="member-status" class="form-select">
-              <option value="active">Active</option>
-              <option value="expired">Expired</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="member-expiry-date">Expiry Date</label>
-            <input type="date" id="member-expiry-date" class="form-input">
-          </div>
-          <div class="form-group form-col-full">
-            <label for="member-split-select">Assign Workout Split Schedule</label>
-            <select id="member-split-select" class="form-select">
-              <option value="">-- Select a Workout Split --</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-close="modal-member-form">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="btn-save-member">Save Member</button>
-        </div>
-      </form>
-    </div>
-  </div>
+    function togglePresetGoal(presetId) {
+      let goal = state.goals.find(g => g.id === presetId);
+      if (goal) {
+        goal.enabled = !goal.enabled;
+      } else {
+        const preset = defaultPresetLibrary.find(p => p.id === presetId);
+        if (preset) {
+          state.goals.push({
+            id: preset.id,
+            name: preset.name,
+            icon: preset.icon,
+            category: preset.category,
+            unit: preset.unit,
+            target: preset.defaultTarget,
+            step: preset.step,
+            type: preset.type,
+            enabled: true,
+            u1Value: 0,
+            u2Value: 0
+          });
+        }
+      }
 
-  <!-- Modal 2b: Member Registration Modal -->
-  <div id="modal-register-member" class="modal-overlay hidden">
-    <div class="modal-box modal-md">
-      <div class="modal-header">
-        <h3>🏋️ Register as Gym Member</h3>
-        <button class="modal-close-btn" data-close="modal-register-member">&times;</button>
-      </div>
-      <form id="register-form" class="modal-body">
-        <div class="form-group">
-          <label for="reg-full-name">Full Name *</label>
-          <input type="text" id="reg-full-name" class="form-input" required placeholder="e.g. Rahul Das">
-        </div>
-        <div class="form-group">
-          <label for="reg-dob">Date of Birth *</label>
-          <input type="date" id="reg-dob" class="form-input" required>
-        </div>
+      saveState();
+      playTactileHaptic('pop');
+      renderPresetGoalPicker();
+      showToast('Habit list updated');
+    }
 
-        <!-- Live Credential Preview Card -->
-        <div class="credentials-preview-card">
-          <div class="preview-badge">🔑 Your Login Credentials Will Be</div>
-          <div class="preview-grid">
-            <div>
-              <span class="preview-label">Username:</span>
-              <code id="reg-preview-username" class="preview-value">--</code>
-              <span class="text-xs text-muted">Full name, lowercase, no spaces</span>
-            </div>
-            <div>
-              <span class="preview-label">Password:</span>
-              <code id="reg-preview-password" class="preview-value">--</code>
-              <span class="text-xs text-muted">DOB DDMMYYYY</span>
-            </div>
-          </div>
-        </div>
+    /* =========================================================================
+       17. INITIALIZATION & RESIZE OBSERVER
+       ========================================================================= */
+    function renderAll() {
+      applyTheme();
+      applyBranding();
+      applyColors();
+      setupGaugeCanvas();
+      renderHabitCards();
+      renderFeed();
+      renderSoloView();
+      renderInsightsTab();
+      renderPodStatusModalUI();
 
-        <div class="form-group">
-          <label for="reg-phone">Phone Number (Optional)</label>
-          <input type="tel" id="reg-phone" class="form-input" placeholder="+91 98620 XXXXX">
-        </div>
-        <div class="form-group">
-          <label for="reg-email">Email Address (Optional)</label>
-          <input type="email" id="reg-email" class="form-input" placeholder="member@gmail.com">
-        </div>
-        <div class="form-group">
-          <label for="reg-plan">Membership Plan</label>
-          <select id="reg-plan" class="form-select">
-            <option value="Standard Monthly">Standard Monthly (₹1,000/mo)</option>
-            <option value="Quarterly Hypertrophy">Quarterly Hypertrophy (₹2,700/3mo)</option>
-            <option value="Half-Yearly Transformation">Half-Yearly Transformation (₹5,000/6mo)</option>
-            <option value="Annual Strength & Conditioning">Annual Strength & Conditioning (₹9,000/yr)</option>
-          </select>
-        </div>
+      const scores = getScores();
+      updateGaugeWithScores(scores);
+      drawGauge();
+    }
 
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-close="modal-register-member">Cancel</button>
-          <button type="submit" class="btn btn-primary" id="btn-submit-register">Create Account & Sign In</button>
-        </div>
-      </form>
-    </div>
-  </div>
+    window.addEventListener('load', () => {
+      renderAll();
+      setTimeout(renderAll, 120);
+    });
 
-  <!-- Modal 3: Workout Split Schedule Designer (Admin) -->
-  <div id="modal-split-designer" class="modal-overlay hidden">
-    <div class="modal-box modal-xl">
-      <div class="modal-header">
-        <h3 id="split-designer-title">Design Weekly Workout Split</h3>
-        <button class="modal-close-btn" data-close="modal-split-designer">&times;</button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="split-edit-id">
-        <div class="form-grid-2 mb-3">
-          <div class="form-group">
-            <label for="split-name-input">Split Name *</label>
-            <input type="text" id="split-name-input" class="form-input" required placeholder="e.g. Dharmanagar 5-Day Hypertrophy">
-          </div>
-          <div class="form-group">
-            <label for="split-desc-input">Description / Focus</label>
-            <input type="text" id="split-desc-input" class="form-input" placeholder="e.g. Heavy compound lifts with targeted arm hypertrophy">
-          </div>
-        </div>
-
-        <!-- 7 Days Tabs in Designer -->
-        <div class="designer-day-tabs" id="designer-day-tabs">
-          <button type="button" class="day-tab-btn active" data-day="0">Mon</button>
-          <button type="button" class="day-tab-btn" data-day="1">Tue</button>
-          <button type="button" class="day-tab-btn" data-day="2">Wed</button>
-          <button type="button" class="day-tab-btn" data-day="3">Thu</button>
-          <button type="button" class="day-tab-btn" data-day="4">Fri</button>
-          <button type="button" class="day-tab-btn" data-day="5">Sat</button>
-          <button type="button" class="day-tab-btn" data-day="6">Sun</button>
-        </div>
-
-        <!-- Day Configuration Container -->
-        <div class="day-config-card mt-3" id="day-config-card">
-          <div class="day-meta-row">
-            <div class="form-group flex-1">
-              <label for="day-target-muscle">Target Body Parts / Muscle Group *</label>
-              <input type="text" id="day-target-muscle" class="form-input" placeholder="e.g. Chest & Triceps, Back & Biceps, Legs, etc.">
-            </div>
-            <div class="rest-toggle-wrap">
-              <label class="toggle-switch">
-                <input type="checkbox" id="day-is-rest-checkbox">
-                <span class="toggle-slider"></span>
-              </label>
-              <span class="toggle-text">Rest Day</span>
-            </div>
-          </div>
-
-          <!-- Exercises for this day -->
-          <div id="day-exercises-block" class="mt-3">
-            <div class="exercises-header-row">
-              <h4>Exercises Planned for this Day</h4>
-              <button type="button" id="btn-add-exercise-to-day" class="btn btn-sm btn-outline">
-                + Add Exercise
-              </button>
-            </div>
-
-            <div id="designer-exercises-list" class="designer-exercises-list mt-2">
-              <!-- Exercise rows rendered dynamically -->
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer mt-4">
-          <button type="button" class="btn btn-secondary" data-close="modal-split-designer">Cancel</button>
-          <button type="button" class="btn btn-primary" id="btn-save-split">Save Split Routine</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal 4: Assign Split to Members (Admin) -->
-  <div id="modal-assign-split" class="modal-overlay hidden">
-    <div class="modal-box modal-md">
-      <div class="modal-header">
-        <h3>Assign Split to Members</h3>
-        <button class="modal-close-btn" data-close="modal-assign-split">&times;</button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="assign-split-id">
-        <p class="text-sm mb-3">Select the members who should follow <strong id="assign-split-name-label">...</strong>:</p>
-        <div id="assign-members-checklist" class="members-checklist">
-          <!-- Checkboxes generated dynamically -->
-        </div>
-        <div class="modal-footer mt-3">
-          <button type="button" class="btn btn-secondary" data-close="modal-assign-split">Cancel</button>
-          <button type="button" class="btn btn-primary" id="btn-confirm-assign-split">Assign Split</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal 5: Log Weight (Member) -->
-  <div id="modal-log-weight" class="modal-overlay hidden">
-    <div class="modal-box modal-sm">
-      <div class="modal-header">
-        <h3>⚖️ Log Daily Weight</h3>
-        <button class="modal-close-btn" data-close="modal-log-weight">&times;</button>
-      </div>
-      <form id="weight-log-form" class="modal-body">
-        <div class="form-group">
-          <label for="weight-kg-input">Weight (kg) *</label>
-          <input type="number" step="0.1" min="30" max="300" id="weight-kg-input" class="form-input" required placeholder="e.g. 76.5">
-        </div>
-        <div class="form-group">
-          <label for="weight-date-input">Log Date</label>
-          <input type="date" id="weight-date-input" class="form-input" required>
-        </div>
-        <div class="form-group">
-          <label for="bodyfat-input">Body Fat % (Optional)</label>
-          <input type="number" step="0.1" min="3" max="60" id="bodyfat-input" class="form-input" placeholder="e.g. 15.5">
-        </div>
-        <div class="form-group">
-          <label for="weight-notes-input">Notes (Optional)</label>
-          <input type="text" id="weight-notes-input" class="form-input" placeholder="e.g. Morning empty stomach">
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-close="modal-log-weight">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Log</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modal 6: Exercise Rest Timer -->
-  <div id="modal-rest-timer" class="modal-overlay hidden">
-    <div class="modal-box modal-sm timer-modal-box">
-      <div class="modal-header">
-        <h3>⏱️ Rest Timer</h3>
-        <button class="modal-close-btn" id="btn-close-timer">&times;</button>
-      </div>
-      <div class="modal-body text-center">
-        <div class="timer-display-ring">
-          <div class="timer-digits" id="timer-digits">01:00</div>
-          <div class="timer-status" id="timer-status">RESTING</div>
-        </div>
-        <div class="timer-presets mt-3">
-          <button class="btn btn-sm btn-outline timer-preset-btn" data-sec="30">30s</button>
-          <button class="btn btn-sm btn-outline timer-preset-btn" data-sec="60">60s</button>
-          <button class="btn btn-sm btn-outline timer-preset-btn" data-sec="90">90s</button>
-          <button class="btn btn-sm btn-outline timer-preset-btn" data-sec="120">2m</button>
-        </div>
-        <div class="timer-controls mt-3">
-          <button id="btn-timer-pause" class="btn btn-outline">Pause</button>
-          <button id="btn-timer-add30" class="btn btn-outline">+30s</button>
-          <button id="btn-timer-reset" class="btn btn-secondary">Reset</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Scripts -->
-  <script src="/static/js/app.js"></script>
-  <script src="/static/js/admin.js"></script>
-  <script src="/static/js/member.js"></script>
+    window.addEventListener('resize', () => {
+      setupGaugeCanvas();
+      drawGauge();
+    });
+  </script>
 </body>
-</html>
+</html>\n
