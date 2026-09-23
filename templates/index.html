@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dharmanagar Iron Gym - Management System</title>
+  <meta name="description" content="Full-stack gym management web application for Dharmanagar Iron Gym. Admin panel & member workout dashboards.">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43 1.43 1.43 2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43 1.71-1.57z"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="gym-title">DHARMANAGAR <span class="accent-text">IRON GYM</span></span>
+          <span class="gym-loc">📍 Dharmanagar, North Tripura</span>
+        </div>
+      </div>
+
+      <!-- User Bar / Auth State -->
+      <div class="header-actions">
+        <div id="auth-user-bar" class="user-bar hidden">
+          <div class="user-chip" id="user-chip" title="Click to view options">
+            <span class="user-avatar" id="user-avatar">?</span>
+            <div class="user-meta">
+              <span class="user-name" id="user-full-name">Loading...</span>
+              <span class="user-badge" id="user-role-badge">Member</span>
+            </div>
+          </div>
+          <button id="btn-quick-switch" class="btn btn-sm btn-outline" title="Switch between Admin & Members for demo">
+            ⇄ Switch User
+          </button>
+          <button id="btn-logout" class="btn btn-sm btn-ghost" title="Log out">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div id="guest-bar" class="guest-bar">
+          <button id="btn-open-login" class="btn btn-primary btn-sm">Sign In</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="app-main">
+    <!-- View 0: Login View -->
+    <section id="view-login" class="view-panel hidden">
+      <div class="login-wrapper">
+        <div class="login-card">
+          <div class="login-header">
+            <div class="login-logo-pill">⚡ MEMBER & TRAINER ACCESS</div>
+            <h2>Welcome Back</h2>
+            <p>Sign in to manage schedules, track workouts, and monitor fitness progress in Dharmanagar.</p>
+          </div>
+
+          <form id="login-form" class="login-form">
+            <div class="form-group">
+              <label for="login-username">Username</label>
+              <input type="text" id="login-username" name="username" class="form-input" placeholder="e.g. rahuldas" required autocomplete="username">
+              <small class="form-hint text-muted">Full name in lowercase with no spaces (e.g., rahul das &rarr; <code>rahuldas</code>)</small>
+            </div>
+
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" name="password" class="form-input" placeholder="e.g. 15082000" required autocomplete="current-password">
+              <small class="form-hint text-muted">Date of birth numbers only in DDMMYYYY format (e.g., <code>15082000</code>)</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" id="login-submit-btn">
+              Sign In to Account
+            </button>
+
+            <div class="text-center mt-3">
+              <span class="text-sm text-muted">New Member?</span>
+              <button type="button" class="btn btn-sm btn-outline ml-1" id="btn-open-register">Register as Member</button>
+            </div>
+          </form>
+
+          <div class="quick-demo-section">
+            <div class="demo-divider"><span>OR ONE-CLICK DEMO LOGIN</span></div>
+            <div class="demo-buttons-grid">
+              <button class="btn btn-outline btn-demo" data-user="admin">
+                👑 <strong>Admin</strong> (admin / 01012000)
+              </button>
+              <button class="btn btn-outline btn-demo" data-user="rahuldebnath">
+                🏋️ <strong>Rahul</strong> (rahuldebnath / 15082000)
+              </button>
+              <button class="btn btn-outline btn-demo" data-user="sneharoy">
+                ⚡ <strong>Sneha</strong> (sneharoy / 10051998)
+              </button>
+              <button class="btn btn-outline btn-demo" data-user="bikramdas">
+                🏃 <strong>Bikram</strong> (bikramdas / 25121995)
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- View 1: ADMIN PANEL -->
+    <section id="view-admin" class="view-panel hidden">
+      <!-- Admin Navigation Tabs -->
+      <div class="admin-nav-bar">
+        <div class="admin-nav-pill">
+          <button class="admin-tab active" data-tab="admin-members">
+            👥 Members Management
+          </button>
+          <button class="admin-tab" data-tab="admin-splits">
+            📋 Workout Split Designer
+          </button>
+          <button class="admin-tab" data-tab="admin-stats">
+            📊 Overview & Metrics
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab 1: Member Management -->
+      <div id="tab-admin-members" class="admin-tab-content active">
+        <div class="section-header-row">
+          <div>
+            <h1 class="page-title">Gym Members</h1>
+            <p class="page-subtitle">Manage member profiles, subscriptions, and assigned workout split routines.</p>
+          </div>
+          <button id="btn-add-member" class="btn btn-primary">
+            + New Member
+          </button>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="filter-card">
+          <div class="search-input-wrap">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="member-search-input" class="form-input" placeholder="Search by name, username, or phone...">
+          </div>
+          <div class="filter-status-group">
+            <button class="filter-pill active" data-status="all">All</button>
+            <button class="filter-pill" data-status="active">Active</button>
+            <button class="filter-pill" data-status="expired">Expired</button>
+            <button class="filter-pill" data-status="inactive">Inactive</button>
+          </div>
+        </div>
+
+        <!-- Members Grid / Table -->
+        <div id="members-list-container" class="members-grid">
+          <div class="loading-spinner">Loading members...</div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Workout Split Designer -->
+      <div id="tab-admin-splits" class="admin-tab-content">
+        <div class="section-header-row">
+          <div>
+            <h1 class="page-title">Weekly Workout Splits</h1>
+            <p class="page-subtitle">Design target muscle groups, exercise selections, sets, reps, and rest timers for each day.</p>
+          </div>
+          <button id="btn-create-split" class="btn btn-primary">
+            + Design New Split
+          </button>
+        </div>
+
+        <div id="splits-list-container" class="splits-grid">
+          <div class="loading-spinner">Loading workout splits...</div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Admin Stats -->
+      <div id="tab-admin-stats" class="admin-tab-content">
+        <div class="section-header-row">
+          <div>
+            <h1 class="page-title">Gym Performance & Stats</h1>
+            <p class="page-subtitle">Daily activity and membership metrics for Dharmanagar Iron Gym.</p>
+          </div>
+        </div>
+
+        <div class="stats-kpi-grid" id="admin-kpi-grid">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="quick-info-card mt-4">
+          <h3>🏋️ Dharmanagar Iron Gym Operational Tips</h3>
+          <ul class="tips-list">
+            <li><strong>Personalized Splits:</strong> Create custom splits for beginner, intermediate, and advanced members or duplicate the standard 5-Day split to tailor volume.</li>
+            <li><strong>Daily Check-ins:</strong> Members can check off completed exercises on their mobile phones on the gym floor in real time.</li>
+            <li><strong>Progress Tracking:</strong> Encourage members to record their body weight and weight lifted to promote progressive overload.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- View 2: MEMBER DASHBOARD -->
+    <section id="view-member" class="view-panel hidden">
+      <!-- Member Mobile Nav Tabs -->
+      <div class="member-nav-bar">
+        <button class="member-tab active" data-tab="member-today">
+          <span class="tab-icon">⚡</span>
+          <span class="tab-label">Today's Workout</span>
+        </button>
+        <button class="member-tab" data-tab="member-weekly">
+          <span class="tab-icon">📅</span>
+          <span class="tab-label">Weekly Split</span>
+        </button>
+        <button class="member-tab" data-tab="member-progress">
+          <span class="tab-icon">⚖️</span>
+          <span class="tab-label">Weight & Progress</span>
+        </button>
+        <button class="member-tab" data-tab="member-profile">
+          <span class="tab-icon">👤</span>
+          <span class="tab-label">My Membership</span>
+        </button>
+      </div>
+
+      <!-- Member Tab 1: Today's Workout -->
+      <div id="tab-member-today" class="member-tab-content active">
+        <!-- Today's Hero Card -->
+        <div class="today-hero-card" id="today-hero-card">
+          <div class="today-hero-header">
+            <div>
+              <span class="today-tag" id="today-date-badge">TODAY'S WORKOUT</span>
+              <h2 class="today-muscle-title" id="today-muscle-title">Loading...</h2>
+              <p class="today-split-name" id="today-split-name">Routine: Loading...</p>
+            </div>
+            <div class="today-progress-ring-wrap">
+              <div class="progress-radial-text">
+                <span class="radial-number" id="radial-completed-count">0/0</span>
+                <span class="radial-sub">DONE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="today-progress-wrap">
+            <div class="progress-label-row">
+              <span id="today-progress-status">0 of 0 exercises completed</span>
+              <strong id="today-progress-pct">0%</strong>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="today-progress-fill" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Exercises List for Today -->
+        <div class="section-title-row">
+          <h3>Exercises for Today</h3>
+          <span class="badge badge-info" id="today-exercise-count">0 Exercises</span>
+        </div>
+
+        <div id="today-exercises-container" class="exercises-container">
+          <div class="loading-spinner">Loading today's exercises...</div>
+        </div>
+      </div>
+
+      <!-- Member Tab 2: Weekly Split Calendar -->
+      <div id="tab-member-weekly" class="member-tab-content">
+        <div class="section-header-row">
+          <div>
+            <h1 class="page-title">Weekly Workout Calendar</h1>
+            <p class="page-subtitle">Your active 7-day training schedule. Tap any day to preview planned exercises.</p>
+          </div>
+        </div>
+
+        <!-- 7-Day Calendar Grid -->
+        <div class="weekly-calendar-grid" id="weekly-calendar-grid">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Selected Day Detail Preview -->
+        <div class="selected-day-card mt-4" id="selected-day-preview">
+          <div class="preview-header">
+            <div>
+              <span class="badge badge-primary" id="preview-day-name">Monday</span>
+              <h3 id="preview-target-muscle" class="mt-1">Chest & Triceps</h3>
+            </div>
+            <span class="badge" id="preview-day-status">Scheduled</span>
+          </div>
+          <div id="preview-exercises-list" class="preview-exercises-list mt-3">
+            <!-- Populated on day click -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Member Tab 3: Weight & Progress Tracker -->
+      <div id="tab-member-progress" class="member-tab-content">
+        <div class="section-header-row">
+          <div>
+            <h1 class="page-title">Weight & Progress Tracker</h1>
+            <p class="page-subtitle">Log daily weigh-ins and watch your body composition transformation.</p>
+          </div>
+          <button id="btn-open-weight-modal" class="btn btn-primary">
+            + Log Weight
+          </button>
+        </div>
+
+        <!-- Weight Stats Row -->
+        <div class="weight-kpi-grid" id="weight-kpi-grid">
+          <div class="kpi-card">
+            <span class="kpi-label">CURRENT WEIGHT</span>
+            <strong class="kpi-val" id="kpi-current-wt">-- kg</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">START WEIGHT</span>
+            <strong class="kpi-val" id="kpi-start-wt">-- kg</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">NET CHANGE</span>
+            <strong class="kpi-val" id="kpi-change-wt">-- kg</strong>
+          </div>
+          <div class="kpi-card">
+            <span class="kpi-label">TOTAL WEIGH-INS</span>
+            <strong class="kpi-val" id="kpi-entries-count">0</strong>
+          </div>
+        </div>
+
+        <!-- Visual Progress Chart Card -->
+        <div class="chart-card mt-4">
+          <div class="chart-header">
+            <h3>📈 Weight Progression Chart</h3>
+            <span class="text-muted text-sm">Trend over time</span>
+          </div>
+          <div class="canvas-wrap">
+            <canvas id="weight-chart-canvas" width="600" height="260"></canvas>
+          </div>
+        </div>
+
+        <!-- Weight History Table -->
+        <div class="history-card mt-4">
+          <div class="history-header">
+            <h3>Log History</h3>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Weight</th>
+                  <th>Body Fat %</th>
+                  <th>Notes</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="weight-history-tbody">
+                <tr><td colspan="5" class="text-center text-muted">No logs recorded yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Member Tab 4: Member Profile & Status -->
+      <div id="tab-member-profile" class="member-tab-content">
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-avatar-large" id="profile-avatar-large">?</div>
+            <div>
+              <h2 id="profile-full-name">Member Name</h2>
+              <p class="text-muted" id="profile-username">@username</p>
+              <div class="mt-2" id="profile-status-badge">
+                <span class="badge badge-success">ACTIVE MEMBER</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-details-grid mt-4">
+            <div class="detail-item">
+              <span class="detail-label">MEMBERSHIP PLAN</span>
+              <strong id="profile-plan">Quarterly Hypertrophy</strong>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">ACTIVE SPLIT</span>
+              <strong id="profile-split-name">Dharmanagar 5-Day Split</strong>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">PHONE NUMBER</span>
+              <strong id="profile-phone">+91 98620 XXXXX</strong>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">START DATE</span>
+              <strong id="profile-start-date">2026-08-01</strong>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">VALID UNTIL</span>
+              <strong id="profile-expiry-date">2026-11-01</strong>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">TOTAL SESSIONS LOGGED</span>
+              <strong id="profile-total-workouts">0 Sessions</strong>
+            </div>
+          </div>
+
+          <div class="gym-badge-card mt-4">
+            <h4>📍 Dharmanagar Iron Gym Facilities</h4>
+            <p class="text-sm text-muted">Located at Main Road, Dharmanagar, North Tripura. Open Mon–Sat: 5:30 AM – 10:00 PM, Sun: 7:00 AM – 1:00 PM.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Modal 1: Quick Switch User -->
+  <div id="modal-quick-switch" class="modal-overlay hidden">
+    <div class="modal-box modal-md">
+      <div class="modal-header">
+        <h3>⇄ Switch User (Demo & Testing)</h3>
+        <button class="modal-close-btn" data-close="modal-quick-switch">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm text-muted mb-3">Quickly swap roles between Admin (Coach) and Gym Members:</p>
+        <div id="demo-users-list" class="demo-users-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Create / Edit Member (Admin) -->
+  <div id="modal-member-form" class="modal-overlay hidden">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <h3 id="member-modal-title">Add New Gym Member</h3>
+        <button class="modal-close-btn" data-close="modal-member-form">&times;</button>
+      </div>
+      <form id="member-form" class="modal-body">
+        <input type="hidden" id="member-edit-id">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="member-full-name">Full Name *</label>
+            <input type="text" id="member-full-name" class="form-input" required placeholder="e.g. Rahul Das">
+          </div>
+          <div class="form-group">
+            <label for="member-dob">Date of Birth *</label>
+            <input type="date" id="member-dob" class="form-input" required>
+          </div>
+
+          <!-- Live Credential Preview Card -->
+          <div class="credentials-preview-card">
+            <div class="preview-badge">🔑 Auto-Generated Login Credentials</div>
+            <div class="preview-grid">
+              <div>
+                <span class="preview-label">Generated Username:</span>
+                <code id="preview-username" class="preview-value">--</code>
+                <span class="text-xs text-muted">Full name, lowercase, no spaces</span>
+              </div>
+              <div>
+                <span class="preview-label">Generated Password:</span>
+                <code id="preview-password" class="preview-value">--</code>
+                <span class="text-xs text-muted">DOB numbers only (DDMMYYYY)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="member-phone">Phone Number</label>
+            <input type="tel" id="member-phone" class="form-input" placeholder="+91 98620 XXXXX">
+          </div>
+          <div class="form-group">
+            <label for="member-email">Email Address</label>
+            <input type="email" id="member-email" class="form-input" placeholder="member@gmail.com">
+          </div>
+          <div class="form-group">
+            <label for="member-plan">Membership Plan</label>
+            <select id="member-plan" class="form-select">
+              <option value="Standard Monthly">Standard Monthly (₹1,000/mo)</option>
+              <option value="Quarterly Hypertrophy">Quarterly Hypertrophy (₹2,700/3mo)</option>
+              <option value="Half-Yearly Transformation">Half-Yearly Transformation (₹5,000/6mo)</option>
+              <option value="Annual Strength & Conditioning">Annual Strength & Conditioning (₹9,000/yr)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="member-status">Membership Status</label>
+            <select id="member-status" class="form-select">
+              <option value="active">Active</option>
+              <option value="expired">Expired</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="member-expiry-date">Expiry Date</label>
+            <input type="date" id="member-expiry-date" class="form-input">
+          </div>
+          <div class="form-group form-col-full">
+            <label for="member-split-select">Assign Workout Split Schedule</label>
+            <select id="member-split-select" class="form-select">
+              <option value="">-- Select a Workout Split --</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modal-member-form">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-save-member">Save Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2b: Member Registration Modal -->
+  <div id="modal-register-member" class="modal-overlay hidden">
+    <div class="modal-box modal-md">
+      <div class="modal-header">
+        <h3>🏋️ Register as Gym Member</h3>
+        <button class="modal-close-btn" data-close="modal-register-member">&times;</button>
+      </div>
+      <form id="register-form" class="modal-body">
+        <div class="form-group">
+          <label for="reg-full-name">Full Name *</label>
+          <input type="text" id="reg-full-name" class="form-input" required placeholder="e.g. Rahul Das">
+        </div>
+        <div class="form-group">
+          <label for="reg-dob">Date of Birth *</label>
+          <input type="date" id="reg-dob" class="form-input" required>
+        </div>
+
+        <!-- Live Credential Preview Card -->
+        <div class="credentials-preview-card">
+          <div class="preview-badge">🔑 Your Login Credentials Will Be</div>
+          <div class="preview-grid">
+            <div>
+              <span class="preview-label">Username:</span>
+              <code id="reg-preview-username" class="preview-value">--</code>
+              <span class="text-xs text-muted">Full name, lowercase, no spaces</span>
+            </div>
+            <div>
+              <span class="preview-label">Password:</span>
+              <code id="reg-preview-password" class="preview-value">--</code>
+              <span class="text-xs text-muted">DOB DDMMYYYY</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-phone">Phone Number (Optional)</label>
+          <input type="tel" id="reg-phone" class="form-input" placeholder="+91 98620 XXXXX">
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address (Optional)</label>
+          <input type="email" id="reg-email" class="form-input" placeholder="member@gmail.com">
+        </div>
+        <div class="form-group">
+          <label for="reg-plan">Membership Plan</label>
+          <select id="reg-plan" class="form-select">
+            <option value="Standard Monthly">Standard Monthly (₹1,000/mo)</option>
+            <option value="Quarterly Hypertrophy">Quarterly Hypertrophy (₹2,700/3mo)</option>
+            <option value="Half-Yearly Transformation">Half-Yearly Transformation (₹5,000/6mo)</option>
+            <option value="Annual Strength & Conditioning">Annual Strength & Conditioning (₹9,000/yr)</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modal-register-member">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-register">Create Account & Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: Workout Split Schedule Designer (Admin) -->
+  <div id="modal-split-designer" class="modal-overlay hidden">
+    <div class="modal-box modal-xl">
+      <div class="modal-header">
+        <h3 id="split-designer-title">Design Weekly Workout Split</h3>
+        <button class="modal-close-btn" data-close="modal-split-designer">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="split-edit-id">
+        <div class="form-grid-2 mb-3">
+          <div class="form-group">
+            <label for="split-name-input">Split Name *</label>
+            <input type="text" id="split-name-input" class="form-input" required placeholder="e.g. Dharmanagar 5-Day Hypertrophy">
+          </div>
+          <div class="form-group">
+            <label for="split-desc-input">Description / Focus</label>
+            <input type="text" id="split-desc-input" class="form-input" placeholder="e.g. Heavy compound lifts with targeted arm hypertrophy">
+          </div>
+        </div>
+
+        <!-- 7 Days Tabs in Designer -->
+        <div class="designer-day-tabs" id="designer-day-tabs">
+          <button type="button" class="day-tab-btn active" data-day="0">Mon</button>
+          <button type="button" class="day-tab-btn" data-day="1">Tue</button>
+          <button type="button" class="day-tab-btn" data-day="2">Wed</button>
+          <button type="button" class="day-tab-btn" data-day="3">Thu</button>
+          <button type="button" class="day-tab-btn" data-day="4">Fri</button>
+          <button type="button" class="day-tab-btn" data-day="5">Sat</button>
+          <button type="button" class="day-tab-btn" data-day="6">Sun</button>
+        </div>
+
+        <!-- Day Configuration Container -->
+        <div class="day-config-card mt-3" id="day-config-card">
+          <div class="day-meta-row">
+            <div class="form-group flex-1">
+              <label for="day-target-muscle">Target Body Parts / Muscle Group *</label>
+              <input type="text" id="day-target-muscle" class="form-input" placeholder="e.g. Chest & Triceps, Back & Biceps, Legs, etc.">
+            </div>
+            <div class="rest-toggle-wrap">
+              <label class="toggle-switch">
+                <input type="checkbox" id="day-is-rest-checkbox">
+                <span class="toggle-slider"></span>
+              </label>
+              <span class="toggle-text">Rest Day</span>
+            </div>
+          </div>
+
+          <!-- Exercises for this day -->
+          <div id="day-exercises-block" class="mt-3">
+            <div class="exercises-header-row">
+              <h4>Exercises Planned for this Day</h4>
+              <button type="button" id="btn-add-exercise-to-day" class="btn btn-sm btn-outline">
+                + Add Exercise
+              </button>
+            </div>
+
+            <div id="designer-exercises-list" class="designer-exercises-list mt-2">
+              <!-- Exercise rows rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer mt-4">
+          <button type="button" class="btn btn-secondary" data-close="modal-split-designer">Cancel</button>
+          <button type="button" class="btn btn-primary" id="btn-save-split">Save Split Routine</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: Assign Split to Members (Admin) -->
+  <div id="modal-assign-split" class="modal-overlay hidden">
+    <div class="modal-box modal-md">
+      <div class="modal-header">
+        <h3>Assign Split to Members</h3>
+        <button class="modal-close-btn" data-close="modal-assign-split">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="assign-split-id">
+        <p class="text-sm mb-3">Select the members who should follow <strong id="assign-split-name-label">...</strong>:</p>
+        <div id="assign-members-checklist" class="members-checklist">
+          <!-- Checkboxes generated dynamically -->
+        </div>
+        <div class="modal-footer mt-3">
+          <button type="button" class="btn btn-secondary" data-close="modal-assign-split">Cancel</button>
+          <button type="button" class="btn btn-primary" id="btn-confirm-assign-split">Assign Split</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: Log Weight (Member) -->
+  <div id="modal-log-weight" class="modal-overlay hidden">
+    <div class="modal-box modal-sm">
+      <div class="modal-header">
+        <h3>⚖️ Log Daily Weight</h3>
+        <button class="modal-close-btn" data-close="modal-log-weight">&times;</button>
+      </div>
+      <form id="weight-log-form" class="modal-body">
+        <div class="form-group">
+          <label for="weight-kg-input">Weight (kg) *</label>
+          <input type="number" step="0.1" min="30" max="300" id="weight-kg-input" class="form-input" required placeholder="e.g. 76.5">
+        </div>
+        <div class="form-group">
+          <label for="weight-date-input">Log Date</label>
+          <input type="date" id="weight-date-input" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="bodyfat-input">Body Fat % (Optional)</label>
+          <input type="number" step="0.1" min="3" max="60" id="bodyfat-input" class="form-input" placeholder="e.g. 15.5">
+        </div>
+        <div class="form-group">
+          <label for="weight-notes-input">Notes (Optional)</label>
+          <input type="text" id="weight-notes-input" class="form-input" placeholder="e.g. Morning empty stomach">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modal-log-weight">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Log</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 6: Exercise Rest Timer -->
+  <div id="modal-rest-timer" class="modal-overlay hidden">
+    <div class="modal-box modal-sm timer-modal-box">
+      <div class="modal-header">
+        <h3>⏱️ Rest Timer</h3>
+        <button class="modal-close-btn" id="btn-close-timer">&times;</button>
+      </div>
+      <div class="modal-body text-center">
+        <div class="timer-display-ring">
+          <div class="timer-digits" id="timer-digits">01:00</div>
+          <div class="timer-status" id="timer-status">RESTING</div>
+        </div>
+        <div class="timer-presets mt-3">
+          <button class="btn btn-sm btn-outline timer-preset-btn" data-sec="30">30s</button>
+          <button class="btn btn-sm btn-outline timer-preset-btn" data-sec="60">60s</button>
+          <button class="btn btn-sm btn-outline timer-preset-btn" data-sec="90">90s</button>
+          <button class="btn btn-sm btn-outline timer-preset-btn" data-sec="120">2m</button>
+        </div>
+        <div class="timer-controls mt-3">
+          <button id="btn-timer-pause" class="btn btn-outline">Pause</button>
+          <button id="btn-timer-add30" class="btn btn-outline">+30s</button>
+          <button id="btn-timer-reset" class="btn btn-secondary">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/admin.js"></script>
+  <script src="/static/js/member.js"></script>
+</body>
+</html>
